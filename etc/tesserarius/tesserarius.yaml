@@ -1,0 +1,10 @@
+version: 1
+staging:
+  gcloud:
+    project: rehive-services
+    zone: europe-west1-c
+  kubernetes:
+    cluster: staging
+    namespace: tesserarius-staging
+  serviceAccount:
+    name: extensions-developer

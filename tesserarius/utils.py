@@ -2,6 +2,12 @@ import os
 from distutils.util import strtobool
 from invoke.exceptions import ParseError
 
+import yaml
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
+
 def get_path():
     '''
     Get the full path name
@@ -25,10 +31,29 @@ def get_settings():
     '''
     Import project settings
     '''
-    with open('tesserarius.yaml', 'r') as stream:
-        settings_dict = yaml.load(stream)
+    with open('etc/tesserarius/tesserarius.yaml', 'r') as stream:
+        settings_dict = yaml.load(stream, Loader=Loader)
 
     return settings_dict
+
+
+def get_gcloud_wide_flags(config_dict, allow_type=True):
+    '''
+    Fetches the project information
+    '''
+    cluster_type = ""
+    if allow_type:
+        try:
+            cluster_type = '--zone {}'.format(config_dict['gcloud']['zone'])
+        except KeyError:
+            try:
+                cluster_type = '--region {}'.format(config_dict['gcloud']['region'])
+            except KeyError:
+                raise ParseError("Couldn't load zonal or regional cluster info")
+
+    return " --project {project} {cluster_type}".format(
+        project=config_dict['gcloud']['project'],
+        cluster_type=cluster_type)
 
 
 def confirm(prompt='Continue?\n', failure_prompt='User cancelled task'):

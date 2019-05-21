@@ -1,7 +1,7 @@
 import pkg_resources
 from invoke import Argument, Collection, Program
 
-import src.tesserarius as tesserarius
+import tesserarius
 
 
 class MainProgram(Program):
@@ -12,6 +12,9 @@ class MainProgram(Program):
         ]
         return core_args + extra_args
 
+namespace = Collection()
+namespace.add_collection(tesserarius.tasks.cluster)
+namespace.add_collection(tesserarius.service_accounts.collection)
 
 version = pkg_resources.get_distribution("tesserarius").version
-program = MainProgram(namespace=Collection.from_module(tesserarius), version=version)
+program = MainProgram(namespace=namespace, version=version)
