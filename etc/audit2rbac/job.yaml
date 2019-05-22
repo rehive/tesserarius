@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: extensions-developer
+
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: testjob
+spec:
+	serviceAccountName: extensions-developer
+	terminationGracePeriodSeconds: 1
+	restartPolicy: OnFailure
+	containers:
+	- name: hyperkube
+	  image: gcr.io/google_containers/hyperkube-am64:v1.8.0
+	  command:
+	  - /bin/bash
+	  - -c
+	  - |
+      retry () {
+    	 echo "$@"
+    	 while true; do
+    	   "$@" > /dev/null 2> /dev/null && break
+         echo " failed, retrying ..."
+         sleep 1
+        done
+        echo " success!"
+      }
+      retry kubectl get configmaps
+

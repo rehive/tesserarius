@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pod-serviceaccount
+  namespace: tesserarius
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rdeploy
+  labels:
+    app: tesserarius
+spec:
+  initContainers:
+  - name: rdeploy
+    image: python:3.5-stretch
+    command:
+    - pip
+    - install
+    - rdeploy
+    - cookiecutter
+  containers:
+  - name: deploy-container
+    image: busybox
