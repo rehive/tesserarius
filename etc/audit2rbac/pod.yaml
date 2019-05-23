@@ -11,14 +11,6 @@ metadata:
   labels:
     app: tesserarius
 spec:
-  initContainers:
-  - name: rdeploy
-    image: python:3.5-stretch
-    command:
-    - pip
-    - install
-    - rdeploy
-    - cookiecutter
   containers:
   - name: deploy-container
-    image: busybox
+    image: rehive/tesserarius:0.0.0
