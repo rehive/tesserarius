@@ -1,6 +1,6 @@
-from tesserarius.utils import get_gcloud_wide_flags, get_settings
-from invoke import task, Collection
 from invoke.exceptions import ParseError
+from tesserarius import Collection, task
+from tesserarius.utils import get_gcloud_wide_flags, get_settings
 
 @task
 def set_cluster(ctx, config):
@@ -15,5 +15,5 @@ def set_cluster(ctx, config):
         echo=True)
 
 
-cluster = Collection("cluster")
-cluster.add_task(set_cluster, "set")
+collection = Collection("cluster")
+collection.add_task(set_cluster, "set")

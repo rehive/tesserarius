@@ -1,11 +1,10 @@
-from invoke import task, Collection
-from invoke.exceptions import ParseError
-from ..serviceaccount import BaseServiceAccount
+from tesserarius import task, Collection
+from tesserarius.serviceaccount import BaseServiceAccount
 from tesserarius.utils import get_gcloud_wide_flags, get_settings
 
 
 class ExtensionsServiceAccount(BaseServiceAccount):
-    project_id = 'rehive-services'
+    project_id = None
 
     def __init__(self, name, display_name):
         self.name = name

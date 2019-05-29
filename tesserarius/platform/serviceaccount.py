@@ -1,7 +1,13 @@
-from invoke import task
-from invoke.exceptions import ParseError
+from tesserarius import task, Collection
+from tesserarius.serviceaccount import BaseServiceAccount
 from tesserarius.utils import get_gcloud_wide_flags, get_settings
 
+
+class PlatformServiceAccount(BaseServiceAccount):
+    project_id = None
+
+    def __init__(self, name, display_name):
+        self.name = name
 
 
 @task
@@ -23,3 +29,7 @@ def create_serviceaccount(ctx, config):
         name=config_dict['serviceAccount']['name']),
         echo=True)
 
+
+collection = Collection("serviceaccount")
+collection.add_task(create_serviceaccount, "create")
+# collection.add_task(authorize_serviceaccount, "auth")

@@ -8,7 +8,18 @@ from os import chdir, pardir, path
 
 from setuptools import find_packages, setup
 
+import tesserarius
+
 here = path.abspath(path.dirname(__file__))
+
+
+def parse_requirements(filename):
+    """
+    Load requirements from a pip requirements file
+    """
+    lineiter = (line.strip() for line in open(filename))
+    return [line for line in lineiter if line and not line.startswith("#")]
+
 
 # Get the long description from the README file
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
@@ -23,24 +34,25 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version=open('VERSION').read().strip(),
+    version=tesserarius.__version__,
     # version=version_string,
     # version='1.0.6',
 
     description=(
-        "CLI that makes it easy to build and deploy an application to k8s."),
+        "CLI application that make it easier to perform DevOps on " \
+        "Kubernetes and GCloud "),
 
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/kidynamit/tesserarius',
+    url=tesserarius.__url__,
 
     # Author details
-    author='Mwangi',
-    author_email='mwangi@rehive.com',
+    author=tesserarius.__author__,
+    author_email=tesserarius.__email__,
 
     # Choose your license
-    license='MIT License',
+    license=tesserarius.__license__,
 
     # See https://pypi.python.org/pypi?:action=list_classifiers
     classifiers=[
@@ -68,7 +80,7 @@ setup(
         # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.7',
     ],
 
     # What does your project relate to?
@@ -96,13 +108,7 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=[
-        'invoke<=0.18.1,>=0.15',
-        'pyyaml',
-        'python-dotenv>=0.5.1',
-        'semver',
-    ],
-
+    install_requires= parse_requirements("requirements.txt"),
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
     # for example:

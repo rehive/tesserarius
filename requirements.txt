@@ -1,1 +1,5 @@
 google-api-python-client
+invoke==0.18.1
+python-dotenv==0.10.2
+PyYAML==5.1
+semver==2.8.1
