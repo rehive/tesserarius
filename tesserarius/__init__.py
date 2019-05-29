@@ -1,4 +1,3 @@
 from invoke import Collection
-
-from .tasks import *
-from .service_accounts import *
+from .tasks import cluster
+from .extensions import collection as extensions_collection
