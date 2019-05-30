@@ -1,7 +1,7 @@
 import pkg_resources
 from invoke import Argument, Collection, Program
 
-from tesserarius.tasks import collection
+from tesserarius.tasks import namespace
 from tesserarius.extensions import collection as extensions_collection
 from tesserarius.platform import collection as platform_collection
 
@@ -13,11 +13,6 @@ class MainProgram(Program):
             Argument(names=('project', 'n'), help="The project/package name being build"),
         ]
         return core_args + extra_args
-
-namespace = Collection()
-namespace.add_collection(extensions_collection)
-namespace.add_collection(platform_collection)
-namespace.add_collection(collection)
 
 version = pkg_resources.get_distribution("tesserarius").version
 program = MainProgram(namespace=namespace, version=version)

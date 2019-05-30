@@ -6,5 +6,13 @@ staging:
   kubernetes:
     cluster: staging
     namespace: tesserarius-staging
+extensions:
   serviceAccount:
-    name: extensions-developer
+    name: extensions-team-developer
+    displayName: "Extensions Team Developer"
+    description: "Service account for the Extensions Team Developer"
+platform:
+  serviceAccount:
+    name: platform-developer
+    displayName: "Platform Developer"
+    description: "Service Account for the Platform Developer"

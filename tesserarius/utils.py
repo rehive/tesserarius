@@ -27,11 +27,22 @@ def format_yaml(template, config):
     return formatted
 
 
+def get_error_stream():
+    path = 'var/tesserarius/error.log'
+    return open(path, 'a+')
+
+
+def get_out_stream():
+    path = 'var/tesserarius/out.log'
+    return open(path, 'a+')
+
+
 def get_settings():
     '''
     Import project settings
     '''
-    with open('etc/tesserarius/tesserarius.yaml', 'r') as stream:
+    path = 'etc/tesserarius/tesserarius.yaml'
+    with open(path, 'r') as stream:
         settings_dict = yaml.load(stream, Loader=Loader)
 
     return settings_dict
