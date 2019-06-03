@@ -3,7 +3,7 @@ DOCKERFILE		:= etc/docker/Dockerfile
 IMAGE_OWNER		:= rehive
 IMAGE_NAME		:= tesserarius
 IMAGE_BASE		:= alpine
-IMAGE_VERSION	:= $(shell cat VERSION)
+IMAGE_VERSION	:= $(shell python -c "import tesserarius; print(tesserarius.__version__);")
 IMAGE_TAG		:= $(IMAGE_OWNER)/$(IMAGE_NAME):$(IMAGE_VERSION)
 CONTAINER_NAME	:= tessie
 
