@@ -56,6 +56,26 @@ def create(ctx):
     sa = ExtensionsServiceAccount.create_obj()
     sa.create(ctx)
 
+
+@task
+def update(ctx):
+    '''
+    Updates an IAM GCloud Service Account on rehive-services
+    '''
+    sa = ExtensionsServiceAccount.create_obj()
+    sa.update(ctx)
+
+
+@task
+def delete(ctx):
+    '''
+    an IAM GCloud Service Account on rehive-services
+    '''
+    sa = ExtensionsServiceAccount.create_obj()
+    sa.delete(ctx)
+
 collection = Collection("serviceaccount")
 collection.add_task(create, "create")
+collection.add_task(update, "update")
+collection.add_task(delete, "delete")
 # collection.add_task(authorize_serviceaccount, "auth")

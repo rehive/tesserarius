@@ -63,9 +63,16 @@ class BaseServiceAccount():
             raise ServiceAccountValidationError("Invalid account name.")
 
 
+    def get_emailaddress(self):
+        self.emailaddress = "{name}@{project_id}" \
+            ".iam.gserviceaccount.com".format(
+                name=self.name, project_id=self.project_id)
+        return self.emailaddress
+
+
     def create(self, ctx):
         '''
-        Creates an IAM GCloud Service Account on rehive-services
+        Creates an IAM GCloud Service Account
         '''
         print("Creating service account '{name}' ... ".format(name=self.name),
               end="")
@@ -83,11 +90,8 @@ class BaseServiceAccount():
                     description=self.description,
                     project_id=self.project_id),
                 echo=False,out_stream=tout(), err_stream=terr())
+                self.get_emailaddress()
                 self.created = True
-                self.emailaddress = "{name}@{project_id}" \
-                    ".iam.gserviceaccount.com".format(
-                        name=self.name, project_id=self.project_id)
-
                 print("SUCCESS!")
             except (Failure, UnexpectedExit,):
                 self.emailaddress = None
@@ -97,8 +101,55 @@ class BaseServiceAccount():
             print("FAILED! [serviceaccount has already been created]'")
 
 
+    def update(self, ctx):
+        '''
+        Updates an IAM GCloud Service Account
+        '''
+        print("Updating service account '{name}' ... ".format(name=self.name),
+              end="")
+        self.get_emailaddress()
+        command = "gcloud alpha iam service-accounts update {emailaddress}" \
+                    " --display-name \"{display_name}\"" \
+                    " --description \"{description}\"" \
+                    " --verbosity debug " \
+                    " --project {project_id}"
 
-        # TODO Check for errrors on output
+        try:
+            result = ctx.run(command.format(
+                emailaddress=self.emailaddress,
+                display_name=self.display_name,
+                description=self.description,
+                project_id=self.project_id),
+            echo=False,out_stream=tout(), err_stream=terr())
+            self.get_emailaddress()
+            print("SUCCESS!")
+        except (Failure, UnexpectedExit,):
+            self.emailaddress = None
+            print("FAILED! [serviceaccount can't be updated]'")
+
+
+    def delete(self, ctx):
+        '''
+        Deletes an IAM GCloud Service Account
+        '''
+        print("Deleting service account '{name}' ... ".format(name=self.name),
+              end="")
+        self.get_emailaddress()
+        command = "gcloud alpha iam service-accounts delete {emailaddress}" \
+                    " --verbosity debug " \
+                    " --project {project_id}"
+
+        try:
+            result = ctx.run(command.format(
+                emailaddress=self.emailaddress,
+                project_id=self.project_id),
+            echo=False,out_stream=tout(), err_stream=terr())
+            self.get_emailaddress()
+            print("SUCCESS!")
+        except (Failure, UnexpectedExit,):
+            self.emailaddress = None
+            print("FAILED! [serviceaccount can't be deleted]'")
+
 
     @staticmethod
     def create_obj(project):
