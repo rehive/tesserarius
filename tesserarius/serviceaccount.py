@@ -4,7 +4,7 @@ from tesserarius.utils import get_gcloud_wide_flags, get_settings
 from invoke.exceptions import Failure, UnexpectedExit
 from tesserarius.utils import get_error_stream as terr, get_out_stream as tout
 
-BASE_NAME_PATTERN = r"[a-z_]+"
+BASE_NAME_PATTERN = r'((-staging)?$)|(-[a-z]{3,10}(-staging)?$)'
 
 class ServiceAccountValidationError(Exception):
     pass
@@ -57,7 +57,7 @@ class BaseServiceAccount():
         <role_name>
 
         short name for the service account describing its purpose.
-        Example: image_store, patroni_wale, walebackups
+        Example: staging, media-staging, pgbackup, pgbackup-staging
         """
         if not match(r"^{}$".format(self.name_pattern), self.name):
             raise ServiceAccountValidationError("Invalid account name.")

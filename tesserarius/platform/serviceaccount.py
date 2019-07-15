@@ -15,14 +15,14 @@ class PlatformServiceAccount(BaseServiceAccount):
         """
         Checks if self.name has the correct naming convention
 
-        extensions-<extension_name>-<role_name>
+        platform-<role_name>
 
         short name for the service account describing its purpose.
         <role_name> pattern is defined in the tesserarius.serviceaccount
 
-        Example: extensions-product-image_store, extensions-product-patroni_wale
+        Example: platform-staging, platform-media, platform-media-staging
         """
-        name_pattern = r"platform-" + BASE_NAME_PATTERN
+        name_pattern = r"platform({base})?".format(base=BASE_NAME_PATTERN)
         if name is not None and display_name is not None:
             super().__init__(name=name,
                   display_name=display_name,

@@ -15,14 +15,16 @@ class ExtensionsServiceAccount(BaseServiceAccount):
         """
         Checks if self.name has the correct naming convention
 
-        platform-<role_name>
+        service-<service-name>(-<role_name>)?
 
         short name for the service account describing its purpose.
         <role_name> pattern is defined in the tesserarius.serviceaccount
 
-        Example: platform-image_store, platform-patroni_wale
+        Example: service-product-media, service-product-pgbackup-staging
         """
-        name_pattern = r"extensions-[a-z]+-" + BASE_NAME_PATTERN
+        service_name = r'[a-z]{3,10}(_[a-z]{3,10}){,2}'
+        name_pattern = r"service-{name}({base})?"\
+            .format(name=service_name, base=BASE_NAME_PATTERN)
         if name is not None and display_name is not None:
             super().__init__(name=name,
                   display_name=display_name,

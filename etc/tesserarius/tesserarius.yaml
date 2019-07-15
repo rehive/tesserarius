@@ -8,11 +8,11 @@ staging:
     namespace: tesserarius-staging
 extensions:
   serviceAccount:
-    name: extensions-team-developer
+    name: service-product-media
     displayName: "Extensions Team Developer"
     description: "Service account for the Extensions Team Developer"
 platform:
   serviceAccount:
-    name: platform-developer
+    name: platform-pgbackup
     displayName: "Platform Developer"
     description: "Service Account for the Platform Developer"
