@@ -48,13 +48,19 @@ class PlatformServiceAccount(BaseServiceAccount):
         return PlatformServiceAccount(base=BaseServiceAccount.create_obj(project))
 
 
+    @staticmethod
+    def create_objs(project="platform"):
+        base_objs = BaseServiceAccount.create_objs(project)
+        return [PlatformServiceAccount(base=b) for b in base_objs]
+
+
 @task
 def create(ctx):
     '''
     Creates an IAM GCloud Service Account on rehive-core
     '''
-    sa = PlatformServiceAccount.create_obj()
-    sa.create(ctx)
+    for sa in PlatformServiceAccount.create_objs():
+        sa.create(ctx)
 
 
 @task
@@ -62,8 +68,8 @@ def update(ctx):
     '''
     Updates an IAM GCloud Service Account on rehive-core
     '''
-    sa = PlatformServiceAccount.create_obj()
-    sa.update(ctx)
+    for sa in PlatformServiceAccount.create_objs():
+        sa.update(ctx)
 
 
 @task
@@ -71,8 +77,8 @@ def delete(ctx):
     '''
     an IAM GCloud Service Account on rehive-core
     '''
-    sa = PlatformServiceAccount.create_obj()
-    sa.delete(ctx)
+    for sa in PlatformServiceAccount.create_objs():
+        sa.delete(ctx)
 
 collection = Collection("serviceaccount")
 collection.add_task(create, "create")

@@ -8,11 +8,29 @@ staging:
     namespace: tesserarius-staging
 extensions:
   serviceAccount:
-    name: service-product-media
-    displayName: "Extensions Team Developer"
-    description: "Service account for the Extensions Team Developer"
+  - name: service-product-media
+    displayName: "Product Service Media Writer"
+    description: "Service account for the Product Service to write to the Media Bucket"
+    role: product.media.writer
+  - name: service-product-staging
+    displayName: "Product Service Admin"
+    description: "Default Service account for the Product Service"
+    role: product.default.user
+  - name: service-product-media-staging
+    displayName: "Product Service Media Writer"
+    description: "Service Account for the Product Service on staging to write to the Media Bucket"
+    role: product.media.writer
+  role:
+  - name: service.media.writer
+    title: ""
+    description: "Role for writing the Patroni backups to GCS Buckets"
 platform:
   serviceAccount:
-    name: platform-pgbackup
+  - name: platform-pgbackup
     displayName: "Platform Developer"
     description: "Service Account for the Platform Developer"
+    role: patroni.backup.writer
+  role:
+  - name: patroni.backup.writer
+    title: "Platform Postgres Backup Writer"
+    description: "Role for writing the Patroni backups to GCS Buckets"
