@@ -46,11 +46,6 @@ class ExtensionsServiceAccount(BaseServiceAccount):
 
 
     @staticmethod
-    def create_obj(project="extensions"):
-        return ExtensionsServiceAccount(base=BaseServiceAccount.create_obj(project))
-
-
-    @staticmethod
     def create_objs(project="extensions"):
         base_objs = BaseServiceAccount.create_objs(project)
         return [ExtensionsServiceAccount(base=b) for b in base_objs]

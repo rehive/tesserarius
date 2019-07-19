@@ -44,11 +44,6 @@ class PlatformServiceAccount(BaseServiceAccount):
 
 
     @staticmethod
-    def create_obj(project="platform"):
-        return PlatformServiceAccount(base=BaseServiceAccount.create_obj(project))
-
-
-    @staticmethod
     def create_objs(project="platform"):
         base_objs = BaseServiceAccount.create_objs(project)
         return [PlatformServiceAccount(base=b) for b in base_objs]

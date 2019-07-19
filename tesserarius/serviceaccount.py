@@ -152,27 +152,6 @@ class BaseServiceAccount():
 
 
     @staticmethod
-    def create_obj(project):
-        settings_dict = get_settings()
-        try:
-            project_dict = settings_dict[project]
-        except KeyError:
-            raise ServiceAccountCreateError(
-                "Config '{project}' not found.".format(project=project))
-
-        serviceAccounts = project_dict['serviceAccount']
-        try:
-            return BaseServiceAccount(
-                name=serviceAccounts[0]['name'],
-                description=serviceAccounts[0]['description'],
-                display_name=serviceAccounts[0]['displayName'])
-
-        except KeyError:
-            raise ServiceAccountCreateError(
-                "Config '{project}' has invalid keys.".format(project=project))
-
-
-    @staticmethod
     def create_objs(project):
         settings_dict = get_settings()
         try:
