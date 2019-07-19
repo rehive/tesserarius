@@ -69,8 +69,8 @@ def get_gcloud_wide_flags(config_dict, allow_type=True):
 
 def confirm(prompt='Continue?\n', failure_prompt='User cancelled task'):
     '''
-    Prompt the user to continue. Repeat on unknown response. Raise
-    ParseError on negative response
+    Prompt the user to continue. Repeat on unknown response.
+    Raise ParseError on negative response
     '''
     response = input(prompt)
     response_bool = False
@@ -83,3 +83,5 @@ def confirm(prompt='Continue?\n', failure_prompt='User cancelled task'):
 
     if not response_bool:
         raise ParseError(failure_prompt)
+
+    return response_bool

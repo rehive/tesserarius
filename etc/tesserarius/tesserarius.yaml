@@ -16,6 +16,10 @@ extensions:
     displayName: "Product Service Admin"
     description: "Default Service account for the Product Service"
     role: product.default.user
+  - name: service-test-media
+    displayName: "Test Service Media Writer"
+    description: "Service account for the Test Service to write to the Media Bucket"
+    role: test.media.writer
   - name: service-product-media-staging
     displayName: "Product Service Media Writer"
     description: "Service Account for the Product Service on staging to write to the Media Bucket"

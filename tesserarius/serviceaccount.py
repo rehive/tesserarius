@@ -1,8 +1,9 @@
 from re import match
 
 from tesserarius.utils import get_gcloud_wide_flags, get_settings
-from invoke.exceptions import Failure, UnexpectedExit
-from tesserarius.utils import get_error_stream as terr, get_out_stream as tout
+from invoke.exceptions import Failure, UnexpectedExit, ParseError
+from tesserarius.utils import get_error_stream as terr, \
+    get_out_stream as tout, confirm
 
 BASE_NAME_PATTERN = r'((-staging)?$)|(-[a-z]{3,10}(-staging)?$)'
 
@@ -74,7 +75,7 @@ class BaseServiceAccount():
         '''
         Creates an IAM GCloud Service Account
         '''
-        print("Creating service account '{name}' ... ".format(name=self.name),
+        print("\nCreating service account '{name}' ... ".format(name=self.name),
               end="")
         command = "gcloud alpha iam service-accounts create {name}" \
                     " --display-name \"{display_name}\"" \
@@ -95,17 +96,17 @@ class BaseServiceAccount():
                 print("SUCCESS!")
             except (Failure, UnexpectedExit,):
                 self.emailaddress = None
-                print("FAILED! [serviceaccount can't be created]'")
+                print("FAILED! [Operation Failed]")
 
         elif self.created:
-            print("FAILED! [serviceaccount has already been created]'")
+            print("FAILED! [SA already created]")
 
 
     def update(self, ctx):
         '''
         Updates an IAM GCloud Service Account
         '''
-        print("Updating service account '{name}' ... ".format(name=self.name),
+        print("\nUpdating service account '{name}' ... ".format(name=self.name),
               end="")
         self.get_emailaddress()
         command = "gcloud alpha iam service-accounts update {emailaddress}" \
@@ -125,14 +126,14 @@ class BaseServiceAccount():
             print("SUCCESS!")
         except (Failure, UnexpectedExit,):
             self.emailaddress = None
-            print("FAILED! [serviceaccount can't be updated]'")
+            print("FAILED! [Operation Failed]")
 
 
     def delete(self, ctx):
         '''
         Deletes an IAM GCloud Service Account
         '''
-        print("Deleting service account '{name}' ... ".format(name=self.name),
+        print("\nDeleting service account '{name}' ... ".format(name=self.name),
               end="")
         self.get_emailaddress()
         command = "gcloud alpha iam service-accounts delete {emailaddress}" \
@@ -140,16 +141,19 @@ class BaseServiceAccount():
                     " --project {project_id}"
 
         try:
+            confirm("\nAre you sure you want to delete SA '{email}'? (y/n) "
+                    .format(email=self.emailaddress))
             result = ctx.run(command.format(
                 emailaddress=self.emailaddress,
                 project_id=self.project_id),
             echo=False,out_stream=tout(), err_stream=terr())
-            self.get_emailaddress()
             print("SUCCESS!")
         except (Failure, UnexpectedExit,):
             self.emailaddress = None
-            print("FAILED! [serviceaccount can't be deleted]'")
-
+            print("FAILED! [Operation Failed]")
+        except ParseError:
+            self.emailaddress = None
+            print("FAILED! [Operation cancelled by user]")
 
     @staticmethod
     def create_objs(project):
