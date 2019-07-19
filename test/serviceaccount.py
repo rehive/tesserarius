@@ -3,11 +3,11 @@ from tesserarius.platform.serviceaccount import PlatformServiceAccount as psa
 
 
 def extensions_create_obj():
-    sa = esa.create_obj()
+    sa = esa.create_objs()
 
 
 def platform_create_obj():
-    sa = psa.create_obj()
+    sa = psa.create_objs()
 
 
 def main():
