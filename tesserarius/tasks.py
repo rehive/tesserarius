@@ -1,5 +1,5 @@
+from invoke import Collection, task
 from invoke.exceptions import ParseError
-from tesserarius import Collection, task
 from tesserarius.utils import get_gcloud_wide_flags, get_settings
 from tesserarius.extensions import collection as extensions_collection
 from tesserarius.platform import collection as platform_collection
