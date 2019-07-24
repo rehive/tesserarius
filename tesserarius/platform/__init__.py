@@ -1,4 +1,4 @@
-from tesserarius import Collection
+from invoke import Collection
 from tesserarius.platform.serviceaccount import collection as sa_collection
 
 collection = Collection("platform")

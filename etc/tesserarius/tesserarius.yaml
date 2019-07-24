@@ -28,6 +28,13 @@ extensions:
   - name: service.media.writer
     title: ""
     description: "Role for writing the Patroni backups to GCS Buckets"
+  - name: extensions.team.developer
+    stage: "ALPHA"
+    title: "Extensions Team Developer"
+    description: "Developer role for GCP Users. Based on: Kubernetes Engine Developer"
+    permissions:
+      - roles/container.developer
+      - serviceusage.services.usage
 platform:
   serviceAccount:
   - name: platform-pgbackup

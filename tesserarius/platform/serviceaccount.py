@@ -1,5 +1,6 @@
 from invoke import task, Collection
-from tesserarius.serviceaccount import BaseServiceAccount, BASE_NAME_PATTERN
+from tesserarius.serviceaccount import \
+    BaseServiceAccount, ServiceAccountCreateError, BASE_NAME_PATTERN
 from tesserarius.utils import get_gcloud_wide_flags, get_settings
 
 
@@ -51,27 +52,27 @@ class PlatformServiceAccount(BaseServiceAccount):
 
 @task
 def create(ctx):
-    '''
+    """
     Creates an IAM GCloud Service Account on rehive-core
-    '''
+    """
     for sa in PlatformServiceAccount.create_objs():
         sa.create(ctx)
 
 
 @task
 def update(ctx):
-    '''
+    """
     Updates an IAM GCloud Service Account on rehive-core
-    '''
+    """
     for sa in PlatformServiceAccount.create_objs():
         sa.update(ctx)
 
 
 @task
 def delete(ctx):
-    '''
+    """
     an IAM GCloud Service Account on rehive-core
-    '''
+    """
     for sa in PlatformServiceAccount.create_objs():
         sa.delete(ctx)
 

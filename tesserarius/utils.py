@@ -9,18 +9,18 @@ except ImportError:
     from yaml import Loader
 
 def get_path():
-    '''
+    """
     Get the full path name
-    '''
+    """
     file_path = os.path.dirname(os.path.realpath(__file__))
     root_path = os.path.dirname(os.path.dirname(file_path))
     return root_path
 
 
 def format_yaml(template, config):
-    '''
+    """
     Replace in ${ENV_VAR} in template with value
-    '''
+    """
     formatted = template
     for k, v in config.items():
         formatted = formatted.replace('${%s}' % k, v)
@@ -37,11 +37,10 @@ def get_out_stream():
     return open(path, 'a+')
 
 
-def get_settings():
-    '''
+def get_settings(path='etc/tesserarius/tesserarius.yaml'):
+    """
     Import project settings
-    '''
-    path = 'etc/tesserarius/tesserarius.yaml'
+    """
     with open(path, 'r') as stream:
         settings_dict = yaml.load(stream, Loader=Loader)
 
@@ -49,9 +48,9 @@ def get_settings():
 
 
 def get_gcloud_wide_flags(config_dict, allow_type=True):
-    '''
+    """
     Fetches the project information
-    '''
+    """
     cluster_type = ""
     if allow_type:
         try:
@@ -68,10 +67,10 @@ def get_gcloud_wide_flags(config_dict, allow_type=True):
 
 
 def confirm(prompt='Continue?\n', failure_prompt='User cancelled task'):
-    '''
+    """
     Prompt the user to continue. Repeat on unknown response.
     Raise ParseError on negative response
-    '''
+    """
     response = input(prompt)
     response_bool = False
 

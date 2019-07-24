@@ -40,10 +40,10 @@ class BaseServiceAccount():
 
 
     def __str__(self):
-        return "account_name: {name}, \
-                display_name: {display_name},  \
-                project_id: {project_id},  \
-                description: {description}".format(
+        return "account_name: {name}, " \
+                "display_name: {display_name}, "\
+                "project_id: {project_id}, "\
+                "description: {description}".format(
                     name=self.name,
                     display_name=self.display_name,
                     project_id=self.project_id,
@@ -72,9 +72,9 @@ class BaseServiceAccount():
 
 
     def create(self, ctx):
-        '''
+        """
         Creates an IAM GCloud Service Account
-        '''
+        """
         print("\nCreating service account '{name}' ... ".format(name=self.name),
               end="")
         command = "gcloud alpha iam service-accounts create {name}" \
@@ -103,9 +103,9 @@ class BaseServiceAccount():
 
 
     def update(self, ctx):
-        '''
+        """
         Updates an IAM GCloud Service Account
-        '''
+        """
         print("\nUpdating service account '{name}' ... ".format(name=self.name),
               end="")
         self.get_emailaddress()
@@ -130,9 +130,9 @@ class BaseServiceAccount():
 
 
     def delete(self, ctx):
-        '''
+        """
         Deletes an IAM GCloud Service Account
-        '''
+        """
         print("\nDeleting service account '{name}' ... ".format(name=self.name),
               end="")
         self.get_emailaddress()
