@@ -24,17 +24,13 @@ extensions:
     displayName: "Product Service Media Writer"
     description: "Service Account for the Product Service on staging to write to the Media Bucket"
     role: product.media.writer
-  role:
-  - name: service.media.writer
-    title: ""
-    description: "Role for writing the Patroni backups to GCS Buckets"
-  - name: extensions.team.developer
-    stage: "ALPHA"
-    title: "Extensions Team Developer"
-    description: "Developer role for GCP Users. Based on: Kubernetes Engine Developer"
-    permissions:
-      - roles/container.developer
-      - serviceusage.services.usage
+  bindings:
+  - members:
+    - user:bjorn@rehive.com
+    - user:connor@rehive.com
+    - user:matthew@rehive.com
+    - user:michael@rehive.com
+    role: projects/rehive-services/roles/extensions.team.developer
 platform:
   serviceAccount:
   - name: platform-pgbackup
