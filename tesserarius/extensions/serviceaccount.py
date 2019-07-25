@@ -55,7 +55,7 @@ class ExtensionsServiceAccount(BaseServiceAccount):
 @task
 def create(ctx):
     '''
-    Creates an IAM GCloud Service Account on rehive-services
+    Creates a Google Cloud IAM Service Account on rehive-services
     '''
     for sa in ExtensionsServiceAccount.create_objs():
         sa.create(ctx)
@@ -64,7 +64,7 @@ def create(ctx):
 @task
 def update(ctx):
     '''
-    Updates an IAM GCloud Service Account on rehive-services
+    Updates a Google Cloud IAM Service Account on rehive-services
     '''
     for sa in ExtensionsServiceAccount.create_objs():
         sa.update(ctx)
@@ -73,7 +73,7 @@ def update(ctx):
 @task
 def delete(ctx):
     '''
-    an IAM GCloud Service Account on rehive-services
+    Deletes a Google Cloud IAM Service Account on rehive-services
     '''
     for sa in ExtensionsServiceAccount.create_objs():
         sa.delete(ctx)
