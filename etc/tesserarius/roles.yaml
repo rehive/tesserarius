@@ -7,8 +7,10 @@ extensions:
     addPermissions: []
     removePermissions: []
     permissions:
-    - container.apiServices.delete
+    - cloudbuild.builds.get
+    - cloudbuild.builds.list
     - container.apiServices.create
+    - container.apiServices.delete
     - container.apiServices.get
     - container.apiServices.list
     - container.apiServices.update
@@ -272,5 +274,12 @@ extensions:
     - container.thirdPartyResources.list
     - container.thirdPartyResources.update
     - container.tokenReviews.create
+    - remotebuildexecution.blobs.get
     - resourcemanager.projects.get
     - serviceusage.services.use
+    - storage.buckets.get
+    - storage.buckets.list
+    - storage.buckets.update
+    - storage.objects.create
+    - storage.objects.get
+    - storage.objects.list

@@ -1,4 +1,7 @@
+FROM wayarmy/alpine-kubectl as kube
 FROM alpine:3.7
+
+COPY --from=kube /usr/bin/kubectl /usr/bin/kubectl
 
 ADD requirements.txt /rehive/tesserarius/requirements.txt
 COPY . /rehive/tesserarius
@@ -8,6 +11,9 @@ RUN set -ex \
         .build-deps \
         g++ \
         python3-dev \
+        curl \
+        which \
+        bash \
         py3-virtualenv \
         libffi-dev \
         openssl-dev \
@@ -23,13 +29,12 @@ RUN set -ex \
         curl-dev \
     && apk add --no-cache --update python3 \
     && ln -s /usr/include/locale.h /usr/include/xlocale.h \
-    && pip3 install --upgrade pip setuptools \
-    && pip3 install rdeploy cookiecutter \
-    && pip3 install --no-cache-dir -r /rehive/tesserarius/requirements.txt \
-    && pip3 install /rehive/tesserarius/ \
-    && cookiecutter --no-input https://github.com/rehive/service-framework \
+    && pip3 install --upgrade pip setuptools rdeploy /rehive/tesserarius/ \
+    && curl -sSL https://sdk.cloud.google.com | sh \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/*
+
+ENV PATH $PATH:/root/google-cloud-sdk/bin
 
 RUN mkdir -p /rehive/src /rehive/tesserarius \
     && addgroup -S rehive \
@@ -38,4 +43,3 @@ ENV HOME /rehive
 USER rehive
 
 WORKDIR /rehive/src
-ENTRYPOINT ["tesserarius"]
