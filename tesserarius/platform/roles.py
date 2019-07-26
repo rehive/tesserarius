@@ -45,7 +45,7 @@ class PlatformRole(BaseRole):
 @task
 def create(ctx):
     '''
-    Creates an Google Cloud IAM Role on rehive-services
+    Creates an Google Cloud IAM Role on rehive-core
     '''
     for sa in PlatformRole.create_objs():
         sa.create(ctx)
@@ -54,7 +54,7 @@ def create(ctx):
 @task
 def update(ctx):
     '''
-    Updates an Google Cloud IAM Role on rehive-services
+    Updates an Google Cloud IAM Role on rehive-core
     '''
     for sa in PlatformRole.create_objs():
         sa.update(ctx)
@@ -63,7 +63,7 @@ def update(ctx):
 @task
 def delete(ctx):
     '''
-    Deletes an Google Cloud IAM Role on rehive-services
+    Deletes an Google Cloud IAM Role on rehive-core
     '''
     for sa in PlatformRole.create_objs():
         sa.delete(ctx)
