@@ -7,6 +7,12 @@ IMAGE_VERSION	:= $(shell python -c "import tesserarius; print(tesserarius.__vers
 IMAGE_TAG		:= $(IMAGE_OWNER)/$(IMAGE_NAME):$(IMAGE_VERSION)
 CONTAINER_NAME	:= tessie
 
+auth:
+	docker run --name google_auth -it google/cloud-sdk:255.0.0-alpine \
+		gcloud auth application-default login
+	mkdir -p var/.config
+	docker cp google_auth:/root/.config/gcloud var/.config/gcloud
+
 docker_build:
 	docker build -f $(DOCKERFILE) -t $(IMAGE_TAG) .
 
