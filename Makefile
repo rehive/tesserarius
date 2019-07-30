@@ -1,17 +1,18 @@
-DOCKERFILE		:= etc/docker/Dockerfile
+DOCKERFILE			:= etc/docker/Dockerfile
 
-IMAGE_OWNER		:= rehive
-IMAGE_NAME		:= tesserarius
-IMAGE_BASE		:= alpine
-IMAGE_VERSION	:= $(shell python -c "import tesserarius; print(tesserarius.__version__);")
-IMAGE_TAG		:= $(IMAGE_OWNER)/$(IMAGE_NAME):$(IMAGE_VERSION)
-CONTAINER_NAME	:= tessie
+IMAGE_OWNER			:= rehive
+IMAGE_NAME			:= tesserarius
+IMAGE_BASE			:= alpine
+IMAGE_VERSION		:= $(shell python -c "import tesserarius; print(tesserarius.__version__);")
+IMAGE_TAG			:= $(IMAGE_OWNER)/$(IMAGE_NAME):$(IMAGE_VERSION)
+CONTAINER_NAME		:= tessie
+AUTH_CONTAINER_NAME := google_auth
 
 auth:
-	docker run --name google_auth -it google/cloud-sdk:255.0.0-alpine \
+	docker run --name $(AUTH_CONTAINER_NAME) -it google/cloud-sdk:255.0.0-alpine \
 		gcloud auth application-default login
 	mkdir -p var/.config
-	docker cp google_auth:/root/.config/gcloud var/.config/gcloud
+	docker cp $(AUTH_CONTAINER_NAME):/root/.config/gcloud var/.config/gcloud
 
 docker_build:
 	docker build -f $(DOCKERFILE) -t $(IMAGE_TAG) .

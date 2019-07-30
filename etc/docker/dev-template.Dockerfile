@@ -1,11 +1,7 @@
-# FROM wayarmy/alpine-kubectl as kube
+FROM wayarmy/alpine-kubectl as kube
 FROM alpine:3.7
 
-# COPY --from=kube /usr/bin/kubectl /usr/bin/kubectl
-
-ADD requirements.txt /rehive/tesserarius/requirements.txt
-COPY . /rehive/tesserarius
-COPY ./var/.config /root/.config
+COPY --from=kube /usr/bin/kubectl /usr/bin/kubectl
 
 RUN set -ex \
     && apk add --no-cache --virtual \
@@ -32,12 +28,18 @@ RUN set -ex \
     && ln -s /usr/include/locale.h /usr/include/xlocale.h \
     && pip3 install --upgrade pip setuptools rdeploy /rehive/tesserarius/ \
     && curl -sSL https://sdk.cloud.google.com | sh \
-    && mv google-cloud-sdk /opt/google-cloud-sdk \
-    && ln -s /opt/google-cloud-sdk/bin/gcloud /usr/local/bin/gcloud \
+    && apk del .build-deps \
     && rm -rf /var/cache/apk/*
 
-ENV PATH $PATH:/opt/google-cloud-sdk/bin
+ENV PATH $PATH:/root/google-cloud-sdk/bin
 
-USER root
+RUN mkdir -p /rehive/src /rehive/tesserarius \
+    && addgroup -S rehive \
+    && adduser -S -g rehive rehive
+ENV HOME /rehive
+USER rehive
+ADD requirements.txt /rehive/tesserarius/requirements.txt
+COPY . /rehive/tesserarius
 
-WORKDIR /rehive/tesserarius
+
+WORKDIR /rehive/src

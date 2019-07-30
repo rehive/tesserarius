@@ -1,9 +1,25 @@
 version: "3.3"
 
 services:
-  framework:
-    image: rehive/tesserarius:0.0.0
-    user: nobody
+  tesserarius:
+    build:
+      context: $PWD
+      dockerfile: $PWD/etc/docker/Dockerfile
+    image: rehive/tesserarius:latest
+    user: rehive
+    env_file: $PWD/.env
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+    tty: false
+  dev_template:
+    build:
+      context: $PWD
+      dockerfile: $PWD/etc/docker/dev-template.Dockerfile
+    image: rehive/dev-template:0.0.1
+    user: dev
     env_file: $PWD/.env
     logging:
       driver: "json-file"
