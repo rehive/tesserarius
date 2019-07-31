@@ -32,12 +32,13 @@ RUN set -ex \
     && ln -s /usr/include/locale.h /usr/include/xlocale.h \
     && pip3 install --upgrade pip setuptools rdeploy /rehive/tesserarius/ \
     && curl -sSL https://sdk.cloud.google.com | sh \
-    && mv google-cloud-sdk /opt/google-cloud-sdk \
-    && ln -s /opt/google-cloud-sdk/bin/gcloud /usr/local/bin/gcloud \
+    && mkdir /opt \
+    && mv /root/google-cloud-sdk /opt/google-cloud-sdk \
     && rm -rf /var/cache/apk/*
+
 
 ENV PATH $PATH:/opt/google-cloud-sdk/bin
 
-USER root
+USER rehive
 
 WORKDIR /rehive/tesserarius
