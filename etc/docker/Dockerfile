@@ -5,7 +5,6 @@ FROM alpine:3.7
 
 ADD requirements.txt /rehive/tesserarius/requirements.txt
 COPY . /rehive/tesserarius
-COPY ./var/.config /root/.config
 
 RUN set -ex \
     && apk add --no-cache --virtual \
@@ -33,12 +32,10 @@ RUN set -ex \
     && pip3 install --upgrade pip setuptools rdeploy /rehive/tesserarius/ \
     && curl -sSL https://sdk.cloud.google.com | sh \
     && mkdir /opt \
-    && mv /root/google-cloud-sdk /opt/google-cloud-sdk \
+    && mv /root/google-cloud-sdk /opt/ \
     && rm -rf /var/cache/apk/*
 
-
 ENV PATH $PATH:/opt/google-cloud-sdk/bin
-
-USER rehive
+ENV HOME /rehive/
 
 WORKDIR /rehive/tesserarius
