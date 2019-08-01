@@ -2,7 +2,6 @@ FROM wayarmy/alpine-kubectl as kube
 FROM alpine:3.7
 
 COPY --from=kube /usr/bin/kubectl /usr/bin/kubectl
-
 COPY . /rehive/tesserarius
 
 RUN set -ex \

@@ -18,8 +18,8 @@ services:
     build:
       context: $PWD
       dockerfile: $PWD/etc/docker/dev-template.Dockerfile
-    image: rehive/dev-template:0.0.1
-    user: dev
+    image: rehive/dev-template:latest
+    user: rehive
     env_file: $PWD/.env
     logging:
       driver: "json-file"

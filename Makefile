@@ -1,13 +1,12 @@
-DOCKERFILE			:= etc/docker/Dockerfile
-
-IMAGE_OWNER			:= rehive
-IMAGE_NAME			:= tesserarius
-IMAGE_BASE			:= alpine
-HASH_TAG			:= $(shell git rev-parse --short HEAD)
-IMAGE_VERSION		:= $(shell python -c "import tesserarius; print(tesserarius.__version__);")
-IMAGE_TAG			:= $(IMAGE_OWNER)/$(IMAGE_NAME):$(IMAGE_VERSION)
-CONTAINER_NAME		:= tessie
-AUTH_CONTAINER_NAME := google_auth
+DOCKERFILE					:= etc/docker/dev-template.Dockerfile
+IMAGE_OWNER					:= rehive
+IMAGE_NAME					:= dev-template
+IMAGE_BASE					:= alpine
+HASH_TAG					:= $(shell git rev-parse --short HEAD)
+IMAGE_VERSION				:= $(shell python -c "import tesserarius; print(tesserarius.__version__);")
+IMAGE_PRE_TAG				:= $(IMAGE_OWNER)/$(IMAGE_NAME)
+CONTAINER_NAME				:= tessie
+AUTH_CONTAINER_NAME 		:= google_auth
 
 auth:
 	docker run --name $(AUTH_CONTAINER_NAME) -it google/cloud-sdk:255.0.0-alpine \
@@ -17,7 +16,9 @@ auth:
 	docker container rm $(AUTH_CONTAINER_NAME)
 
 docker_build:
-	docker build -f $(DOCKERFILE) -t $(IMAGE_TAG) .
+	docker build -f $(DOCKERFILE) -t $(IMAGE_PRE_TAG):latest .
+	docker build -f $(DOCKERFILE) -t $(IMAGE_PRE_TAG):$(IMAGE_VERSION) .
+	docker build -f $(DOCKERFILE) -t $(IMAGE_PRE_TAG):$(HASH_TAG) .
 
 docker_push:
 	docker push $(IMAGE_TAG)
@@ -41,3 +42,5 @@ upload: release build dist
 
 clean:
 	rm -rf build dist upload
+	docker container rm $(AUTH_CONTAINER_NAME)
+	docker container rm $(CONTAINER_NAME)
