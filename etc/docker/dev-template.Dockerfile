@@ -2,7 +2,6 @@ FROM wayarmy/alpine-kubectl as kube
 FROM alpine:3.7
 
 COPY --from=kube /usr/bin/kubectl /usr/bin/kubectl
-COPY . /rehive/tesserarius
 
 RUN set -ex \
     && apk add --no-cache --virtual \
@@ -27,7 +26,7 @@ RUN set -ex \
         curl-dev \
     && apk add --no-cache --update python3 git bash \
     && ln -s /usr/include/locale.h /usr/include/xlocale.h \
-    && pip3 install --upgrade pip setuptools rdeploy /rehive/tesserarius/ \
+    && pip3 install --upgrade pip setuptools rdeploy \
     && curl -sSL https://sdk.cloud.google.com | sh \
     && mkdir /opt \
     && mv /root/google-cloud-sdk /opt/ \
