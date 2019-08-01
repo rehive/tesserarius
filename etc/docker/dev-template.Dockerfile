@@ -2,7 +2,6 @@ FROM wayarmy/alpine-kubectl as kube
 FROM alpine:3.7
 
 COPY --from=kube /usr/bin/kubectl /usr/bin/kubectl
-COPY . /rehive/tesserarius
 
 RUN set -ex \
     && apk add --no-cache --virtual \
@@ -27,7 +26,7 @@ RUN set -ex \
         curl-dev \
     && apk add --no-cache --update python3 git bash \
     && ln -s /usr/include/locale.h /usr/include/xlocale.h \
-    && pip3 install --upgrade pip setuptools rdeploy /rehive/tesserarius/ \
+    && pip3 install --upgrade pip setuptools rdeploy \
     && curl -sSL https://sdk.cloud.google.com | sh \
     && mkdir /opt \
     && mv /root/google-cloud-sdk /opt/ \
@@ -44,9 +43,9 @@ RUN set -ex \
     && adduser -S -G rehive -h /rehive rehive \
     && mkdir -p /rehive/.kube \
     && chown -R rehive:rehive /rehive/.config \
-    && chown -R rehive:rehive /rehive/.kube
+    && chown -R rehive:rehive /rehive/.kube \
+    && git clone https://github.com/tesserarius/service-template /rehive/template
 
 USER rehive
 
-WORKDIR /rehive/tesserarius
-ENTRYPOINT ["tesserarius"]
+WORKDIR /rehive/template
