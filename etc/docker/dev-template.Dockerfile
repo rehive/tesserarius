@@ -1,7 +1,9 @@
 FROM wayarmy/alpine-kubectl as kube
+FROM alpine/helm:2.14.3 as helm2
 FROM alpine:3.7
 
 COPY --from=kube /usr/bin/kubectl /usr/bin/kubectl
+COPY --from=helm2 /usr/bin/helm /usr/bin/helm
 
 RUN set -ex \
     && apk add --no-cache --virtual \
@@ -24,7 +26,7 @@ RUN set -ex \
         gfortran \
         git \
         curl-dev \
-    && apk add --no-cache --update python3 git bash \
+    && apk add --no-cache --update python python3 git bash \
     && ln -s /usr/include/locale.h /usr/include/xlocale.h \
     && pip3 install --upgrade pip setuptools rdeploy \
     && curl -sSL https://sdk.cloud.google.com | sh \
@@ -40,11 +42,12 @@ COPY ./var/.config/gcloud /rehive/.config
 
 RUN set -ex \
     && addgroup -S rehive \
+    && git clone https://github.com/tesserarius/service-template /rehive/template \
     && adduser -S -G rehive -h /rehive rehive \
     && mkdir -p /rehive/.kube \
     && chown -R rehive:rehive /rehive/.config \
-    && chown -R rehive:rehive /rehive/.kube \
-    && git clone https://github.com/tesserarius/service-template /rehive/template
+    && chown -R rehive:rehive /rehive/template \
+    && chown -R rehive:rehive /rehive/.kube
 
 USER rehive
 

@@ -42,11 +42,11 @@ COPY ./var/.config/gcloud /rehive/.config
 RUN set -ex \
     && addgroup -S rehive \
     && adduser -S -G rehive -h /rehive rehive \
-    && mkdir -p /rehive/.kube \
+    && mkdir -p /rehive/.kube /rehive/tesserarius/var/tesserarius \
     && chown -R rehive:rehive /rehive/.config \
-    && chown -R rehive:rehive /rehive/.kube
+    && chown -R rehive:rehive /rehive/.kube \
+    && chown -R rehive:rehive /rehive/tesserarius
 
 USER rehive
 
 WORKDIR /rehive/tesserarius
-ENTRYPOINT ["tesserarius"]

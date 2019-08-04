@@ -1,10 +1,13 @@
-DOCKERFILE					:= etc/docker/dev-template.Dockerfile
+DOCKERFILE					:= etc/docker/Dockerfile
+TEMPLATE_DOCKERFILE			:= etc/docker/dev-template.Dockerfile
+TEMPLATE_IMAGE_NAME			:= dev-template
 IMAGE_OWNER					:= rehive
-IMAGE_NAME					:= dev-template
+IMAGE_NAME					:= tesserarius
 IMAGE_BASE					:= alpine
 HASH_TAG					:= $(shell git rev-parse --short HEAD)
 IMAGE_VERSION				:= $(shell python -c "import tesserarius; print(tesserarius.__version__);")
 IMAGE_PRE_TAG				:= $(IMAGE_OWNER)/$(IMAGE_NAME)
+TEMPLATE_IMAGE_PRE_TAG		:= $(IMAGE_OWNER)/$(TEMPLATE_IMAGE_NAME)
 CONTAINER_NAME				:= tessie
 AUTH_CONTAINER_NAME 		:= google_auth
 
@@ -20,11 +23,18 @@ docker_build:
 	docker build -f $(DOCKERFILE) -t $(IMAGE_PRE_TAG):$(IMAGE_VERSION) .
 	docker build -f $(DOCKERFILE) -t $(IMAGE_PRE_TAG):$(HASH_TAG) .
 
+template_docker_build:
+	docker build -f $(TEMPLATE_DOCKERFILE) -t $(TEMPLATE_IMAGE_PRE_TAG):latest .
+	docker build -f $(TEMPLATE_DOCKERFILE) -t $(TEMPLATE_IMAGE_PRE_TAG):$(IMAGE_VERSION) .
+	docker build -f $(TEMPLATE_DOCKERFILE) -t $(TEMPLATE_IMAGE_PRE_TAG):$(HASH_TAG) .
+
 docker_push:
 	docker push $(IMAGE_TAG)
 
 docker_run:
-	docker run --interactive --tty --rm $(IMAGE_TAG)
+	docker run -it --rm \
+		-v $$PWD/etc/tesserarius/roles.yaml:/rehive/tesserarius/etc/tesserarius/roles.yaml \
+		$(IMAGE_PRE_TAG):latest
 
 dist:
 	python setup.py sdist bdist_wheel bdist_egg
