@@ -29,7 +29,12 @@ template_docker_build:
 	docker build -f $(TEMPLATE_DOCKERFILE) -t $(TEMPLATE_IMAGE_PRE_TAG):$(HASH_TAG) .
 
 docker_push:
-	docker push $(IMAGE_TAG)
+	docker push $(IMAGE_PRE_TAG):latest
+	docker push $(IMAGE_PRE_TAG):$(IMAGE_VERSION)
+	docker push $(IMAGE_PRE_TAG):$(HASH_TAG)
+	docker push $(TEMPLATE_IMAGE_PRE_TAG):latest
+	docker push $(TEMPLATE_IMAGE_PRE_TAG):$(IMAGE_VERSION)
+	docker push $(TEMPLATE_IMAGE_PRE_TAG):$(HASH_TAG)
 
 docker_run:
 	docker run -it --rm \
