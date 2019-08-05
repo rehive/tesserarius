@@ -22,18 +22,21 @@ class BaseServiceAccount():
     display_name = ""
     description = ""
     name_pattern = None
+    role = None
 
     created = False
 
     def __init__(self,
                  name=None,
                  display_name=None,
+                 role=None,
                  description=None,
                  name_pattern=None):
         self.name_pattern = name_pattern
         self.name = name
         self.display_name = display_name
         self.description = description
+        self.role = role
 
         if name_pattern is None:
             self.name_pattern = BASE_NAME_PATTERN
@@ -43,10 +46,12 @@ class BaseServiceAccount():
         return "account_name: {name}, " \
                 "display_name: {display_name}, "\
                 "project_id: {project_id}, "\
+                "role: {role}, "\
                 "description: {description}".format(
                     name=self.name,
                     display_name=self.display_name,
                     project_id=self.project_id,
+                    role=self.role,
                     description=self.description
                 )
 
@@ -155,6 +160,32 @@ class BaseServiceAccount():
             self.emailaddress = None
             print("FAILED! [Operation cancelled by user]")
 
+
+    def bind(self, ctx):
+        """
+        Bind an IAM GCloud Service Account
+        """
+        print("\nBinding service account '{name}' ... ".format(name=self.name),
+              end="")
+        self.get_emailaddress()
+        command = "gcloud projects add-iam-policy-binding {project_id}" \
+                    " --member=serviceAccount:{emailaddress}" \
+                    " --role=projects/{project_id}/roles/{role}"
+        try:
+            result = ctx.run(command.format(
+                emailaddress=self.emailaddress,
+                role=self.role,
+                project_id=self.project_id),
+            echo=False,out_stream=tout(), err_stream=terr())
+            print("SUCCESS!")
+        except (Failure, UnexpectedExit,):
+            self.emailaddress = None
+            print("FAILED! [Operation Failed]")
+        except ParseError:
+            self.emailaddress = None
+            print("FAILED! [Operation cancelled by user]")
+
+
     @staticmethod
     def create_objs(project):
         settings_dict = get_settings()
@@ -171,10 +202,10 @@ class BaseServiceAccount():
                 objs.append(BaseServiceAccount(
                     name=serviceAccounts[i]['name'],
                     description=serviceAccounts[i]['description'],
+                    role=serviceAccounts[i]['role'],
                     display_name=serviceAccounts[i]['displayName']))
 
             except KeyError:
                 raise ServiceAccountCreateError(
                     "Config '{project}' has invalid keys.".format(project=project))
         return objs
-

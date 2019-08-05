@@ -37,7 +37,8 @@ platform:
     displayName: "Platform Developer"
     description: "Service Account for the Platform Developer"
     role: patroni.backup.writer
-  role:
-  - name: patroni.backup.writer
-    title: "Platform Postgres Backup Writer"
-    description: "Role for writing the Patroni backups to GCS Buckets"
+  bindings:
+  - members:
+    - user:connor@rehive.com
+    - user:matthew@rehive.com
+    role: projects/rehive-core/roles/platform.team.developer

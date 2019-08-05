@@ -12,6 +12,7 @@ class ExtensionsServiceAccount(BaseServiceAccount):
                  name=None,
                  display_name=None,
                  description=None,
+                 role=None,
                  base=None):
         """
         Checks if self.name has the correct naming convention
@@ -30,6 +31,7 @@ class ExtensionsServiceAccount(BaseServiceAccount):
             super().__init__(name=name,
                   display_name=display_name,
                   description=description,
+                  role=role,
                   name_pattern=name_pattern)
             # discard base object
             base = None
@@ -38,6 +40,7 @@ class ExtensionsServiceAccount(BaseServiceAccount):
             super().__init__(name=base.name,
                   display_name=base.display_name,
                   description=base.description,
+                  role=base.role,
                   name_pattern=name_pattern)
         else:
             raise ServiceAccountCreateError(
@@ -78,8 +81,19 @@ def delete(ctx):
     for sa in ExtensionsServiceAccount.create_objs():
         sa.delete(ctx)
 
+
+@task
+def bind(ctx):
+    '''
+    Binds a Google Cloud IAM Service Account on rehive-services
+    '''
+    for sa in ExtensionsServiceAccount.create_objs():
+        sa.bind(ctx)
+
+
 collection = Collection("serviceaccount")
+collection.add_task(bind, "bind")
 collection.add_task(create, "create")
-collection.add_task(update, "update")
 collection.add_task(delete, "delete")
+collection.add_task(update, "update")
 # collection.add_task(authorize_serviceaccount, "auth")
