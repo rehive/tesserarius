@@ -17,16 +17,16 @@ def get_path():
     return root_path
 
 
-def task_template(cls, method, context, **kwargs):
+def task_template(cls, method, args, **kwargs):
     """
     Task template for generic tasks
     """
     for sa in cls.create_objs():
         for attrib, value in kwargs.items():
             if value is None:
-                getattr(sa, method)(context)
+                getattr(sa, method)(*args)
             elif getattr(sa, attrib) == value:
-                getattr(sa, method)(context)
+                getattr(sa, method)(*args)
 
 
 def format_yaml(template, config):
