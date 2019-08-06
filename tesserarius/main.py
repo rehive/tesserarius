@@ -1,9 +1,7 @@
 import pkg_resources
 from invoke import Argument, Collection, Program
 
-from tesserarius.tasks import namespace
-from tesserarius.extensions import collection as extensions_collection
-from tesserarius.platform import collection as platform_collection
+from tesserarius import namespace
 
 
 class MainProgram(Program):
