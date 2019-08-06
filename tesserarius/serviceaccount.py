@@ -1,3 +1,4 @@
+from os.path import abspath
 from re import match
 
 from tesserarius.utils import get_gcloud_wide_flags, get_settings
@@ -183,6 +184,79 @@ class BaseServiceAccount():
             print("FAILED! [Operation Failed]")
         except ParseError:
             self.emailaddress = None
+            print("FAILED! [Operation cancelled by user]")
+
+
+    def upload(self, ctx, namespace, secret):
+        """
+        Upload key file to Kubernetes Cluster as a secrets
+        """
+        print("\nUploading private key for '{name}' ... ".format(name=self.name),
+              end="")
+        self.get_emailaddress()
+        key_file = "var/tesserarius/" + self.name + ".json"
+        key_file = abspath(key_file)
+
+        commands = [
+            {
+                "cmd" : "gcloud iam service-accounts describe {emailaddress} " \
+                    " --project {project_id}",
+                "format" : {
+                    "emailaddress" : self.emailaddress,
+                    "project_id" : self.project_id,
+                },
+            },
+            {
+                "cmd" : "kubectl get namespace {namespace} -o name",
+                "format" : {
+                    "namespace" : namespace,
+                },
+            },
+            {
+                "cmd" : "gcloud iam service-accounts keys create {key_file} " \
+                    " --iam-account={emailaddress}" \
+                    " --key-file-type=\"json\"" \
+                    " --project {project_id}",
+                "format" : {
+                    "key_file" : key_file,
+                    "emailaddress" : self.emailaddress,
+                    "project_id" : self.project_id,
+                },
+            },
+            {
+                "cmd" : "kubectl delete secret {secret} " \
+                    " --namespace {namespace} || touch {key_file}",
+                "format" : {
+                    "secret" : secret,
+                    "key_file" : key_file,
+                    "namespace" : namespace,
+                },
+            },
+            {
+                "cmd" : "kubectl create secret generic {secret} " \
+                    " --from-file={secret}.json={key_file}"
+                    " --namespace {namespace}",
+                "format" : {
+                    "key_file" : key_file,
+                    "secret" : secret,
+                    "namespace" : namespace,
+                },
+            },
+            {
+                "cmd" : "rm -rf {key_file}",
+                "format" : {
+                    "key_file" : key_file,
+                },
+            },
+        ]
+        try:
+            for op in commands:
+                result = ctx.run(op["cmd"].format(**op["format"]),
+                    echo=False, out_stream=tout(), err_stream=terr())
+            print("SUCCESS!")
+        except (Failure, UnexpectedExit,):
+            print("FAILED! [Operation Failed]")
+        except ParseError:
             print("FAILED! [Operation cancelled by user]")
 
 

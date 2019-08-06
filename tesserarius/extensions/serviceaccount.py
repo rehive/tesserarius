@@ -63,7 +63,7 @@ def create(ctx, name=None):
     '''
     Creates a Google Cloud IAM Service Account on rehive-services
     '''
-    task_template(ExtensionsServiceAccount, "create", ctx, name=name)
+    task_template(ExtensionsServiceAccount, "create", [ctx,], name=name)
 
 
 @task(help={
@@ -73,7 +73,7 @@ def delete(ctx, name=None):
     '''
     Deletes a Google Cloud IAM Service Account on rehive-services
     '''
-    task_template(ExtensionsServiceAccount, "delete", ctx, name=name)
+    task_template(ExtensionsServiceAccount, "delete", [ctx,], name=name)
 
 
 @task(help={
@@ -83,7 +83,20 @@ def update(ctx, name=None):
     '''
     Updates a Google Cloud IAM Service Account on rehive-services
     '''
-    task_template(ExtensionsServiceAccount, "update", ctx, name=name)
+    task_template(ExtensionsServiceAccount, "update", [ctx,], name=name)
+
+
+@task(help={
+    "name" : "The name of the service account to upload",
+    "namespace" : "The kubernetes namespace to upload the private key",
+    "secret": "The kubernetes secret name to upload the private key",
+})
+def upload(ctx, name, namespace, secret):
+    '''
+    Updates a Google Cloud IAM Service Account on rehive-services
+    '''
+    task_template(ExtensionsServiceAccount, "upload",
+                  [ctx, namespace, secret,], name=name)
 
 
 @task(help={
@@ -93,11 +106,13 @@ def bind(ctx, name=None):
     '''
     Binds a Google Cloud IAM Service Account on rehive-services
     '''
-    task_template(ExtensionsServiceAccount, "bind", ctx, name=name)
+    task_template(ExtensionsServiceAccount, "bind", [ctx,], name=name)
+
 
 collection = Collection("serviceaccount")
 collection.add_task(bind, "bind")
 collection.add_task(create, "create")
 collection.add_task(delete, "delete")
 collection.add_task(update, "update")
+collection.add_task(upload, "upload")
 # collection.add_task(authorize_serviceaccount, "auth")

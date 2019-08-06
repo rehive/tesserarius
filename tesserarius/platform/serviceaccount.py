@@ -1,7 +1,8 @@
 from invoke import task, Collection
 from tesserarius.serviceaccount import \
     BaseServiceAccount, ServiceAccountCreateError, BASE_NAME_PATTERN
-from tesserarius.utils import get_gcloud_wide_flags, get_settings
+from tesserarius.utils import get_gcloud_wide_flags, \
+    get_settings, task_template
 
 
 class PlatformServiceAccount(BaseServiceAccount):
@@ -53,40 +54,57 @@ class PlatformServiceAccount(BaseServiceAccount):
         return [PlatformServiceAccount(base=b) for b in base_objs]
 
 
-@task
-def create(ctx):
-    """
-    Creates a Google Cloud IAM Service Account on rehive-core
-    """
-    for sa in PlatformServiceAccount.create_objs():
-        sa.create(ctx)
+@task(help={
+    "name" : "The name of the service account to handle",
+})
+def create(ctx, name=None):
+    '''
+    Creates a Google Cloud IAM Service Account on rehive-services
+    '''
+    task_template(PlatformServiceAccount, "create", [ctx,], name=name)
 
 
-@task
-def update(ctx):
-    """
-    Updates a Google Cloud IAM Service Account on rehive-core
-    """
-    for sa in PlatformServiceAccount.create_objs():
-        sa.update(ctx)
+@task(help={
+    "name" : "The name of the service account to handle",
+})
+def delete(ctx, name=None):
+    '''
+    Deletes a Google Cloud IAM Service Account on rehive-services
+    '''
+    task_template(PlatformServiceAccount, "delete", [ctx,], name=name)
 
 
-@task
-def delete(ctx):
-    """
-    Deletes a Google Cloud IAM Service Account on rehive-core
-    """
-    for sa in PlatformServiceAccount.create_objs():
-        sa.delete(ctx)
+@task(help={
+    "name" : "The name of the service account to handle",
+})
+def update(ctx, name=None):
+    '''
+    Updates a Google Cloud IAM Service Account on rehive-services
+    '''
+    task_template(PlatformServiceAccount, "update", [ctx,], name=name)
 
 
-@task
-def bind(ctx):
-    """
-    Deletes a Google Cloud IAM Service Account on rehive-core
-    """
-    for sa in PlatformServiceAccount.create_objs():
-        sa.bind(ctx)
+@task(help={
+    "name" : "The name of the service account to handle",
+})
+def bind(ctx, name=None):
+    '''
+    Binds a Google Cloud IAM Service Account on rehive-services
+    '''
+    task_template(PlatformServiceAccount, "bind", [ctx,], name=name)
+
+
+@task(help={
+    "name" : "The name of the service account to upload",
+    "namespace" : "The kubernetes namespace to upload the private key",
+    "secret": "The kubernetes secret name to upload the private key",
+})
+def upload(ctx, name, namespace, secret):
+    '''
+    Updates a Google Cloud IAM Service Account on rehive-services
+    '''
+    task_template(ExtensionsServiceAccount, "upload",
+                  [ctx, namespace, secret,], name=name)
 
 
 collection = Collection("serviceaccount")
@@ -94,4 +112,5 @@ collection.add_task(bind, "bind")
 collection.add_task(create, "create")
 collection.add_task(delete, "delete")
 collection.add_task(update, "update")
+collection.add_task(upload, "upload")
 # collection.add_task(authorize_serviceaccount, "auth")
