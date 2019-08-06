@@ -1,7 +1,8 @@
 from invoke import task, Collection
 from tesserarius.serviceaccount import \
     BaseServiceAccount, ServiceAccountCreateError, BASE_NAME_PATTERN
-from tesserarius.utils import get_gcloud_wide_flags, get_settings
+from tesserarius.utils import get_gcloud_wide_flags, \
+    get_settings, task_template
 
 
 class ExtensionsServiceAccount(BaseServiceAccount):
@@ -55,41 +56,44 @@ class ExtensionsServiceAccount(BaseServiceAccount):
         return [ExtensionsServiceAccount(base=b) for b in base_objs]
 
 
-@task
-def create(ctx):
+@task(help={
+    "name" : "The name of the service account to handle",
+})
+def create(ctx, name=None):
     '''
     Creates a Google Cloud IAM Service Account on rehive-services
     '''
-    for sa in ExtensionsServiceAccount.create_objs():
-        sa.create(ctx)
+    task_template(ExtensionsServiceAccount, "create", ctx, name=name)
 
 
-@task
-def update(ctx):
-    '''
-    Updates a Google Cloud IAM Service Account on rehive-services
-    '''
-    for sa in ExtensionsServiceAccount.create_objs():
-        sa.update(ctx)
-
-
-@task
-def delete(ctx):
+@task(help={
+    "name" : "The name of the service account to handle",
+})
+def delete(ctx, name=None):
     '''
     Deletes a Google Cloud IAM Service Account on rehive-services
     '''
-    for sa in ExtensionsServiceAccount.create_objs():
-        sa.delete(ctx)
+    task_template(ExtensionsServiceAccount, "delete", ctx, name=name)
 
 
-@task
-def bind(ctx):
+@task(help={
+    "name" : "The name of the service account to handle",
+})
+def update(ctx, name=None):
+    '''
+    Updates a Google Cloud IAM Service Account on rehive-services
+    '''
+    task_template(ExtensionsServiceAccount, "update", ctx, name=name)
+
+
+@task(help={
+    "name" : "The name of the service account to handle",
+})
+def bind(ctx, name=None):
     '''
     Binds a Google Cloud IAM Service Account on rehive-services
     '''
-    for sa in ExtensionsServiceAccount.create_objs():
-        sa.bind(ctx)
-
+    task_template(ExtensionsServiceAccount, "bind", ctx, name=name)
 
 collection = Collection("serviceaccount")
 collection.add_task(bind, "bind")
