@@ -1,6 +1,7 @@
 from invoke import task, Collection
 from tesserarius.roles import BaseRole, RoleCreateError
-from tesserarius.utils import get_gcloud_wide_flags, get_settings
+from tesserarius.utils import get_gcloud_wide_flags, \
+    get_settings, task_template
 
 
 class ExtensionsRole(BaseRole):
@@ -42,31 +43,35 @@ class ExtensionsRole(BaseRole):
         return [ExtensionsRole(base=b) for b in base_objs]
 
 
-@task
-def create(ctx):
+@task(help={
+    "name" : "The name of the role to handle",
+})
+def create(ctx, name=None):
     '''
-    Creates an Google Cloud IAM Role on rehive-services
+    Creates a Google Cloud IAM role on rehive-services
     '''
-    for sa in ExtensionsRole.create_objs():
-        sa.create(ctx)
+    task_template(ExtensionsRole, "create", [ctx,], name=name)
 
 
-@task
-def update(ctx):
+@task(help={
+    "name" : "The name of the role to handle",
+})
+def delete(ctx, name=None):
     '''
-    Updates an Google Cloud IAM Role on rehive-services
+    Deletes a Google Cloud IAM role on rehive-services
     '''
-    for sa in ExtensionsRole.create_objs():
-        sa.update(ctx)
+    task_template(ExtensionsRole, "delete", [ctx,], name=name)
 
 
-@task
-def delete(ctx):
+@task(help={
+    "name" : "The name of the role to handle",
+})
+def update(ctx, name=None):
     '''
-    Deletes an Google Cloud IAM Role on rehive-services
+    Updates a Google Cloud IAM role on rehive-services
     '''
-    for sa in ExtensionsRole.create_objs():
-        sa.delete(ctx)
+    task_template(ExtensionsRole, "update", [ctx,], name=name)
+
 
 collection = Collection("roles")
 collection.add_task(create, "create")

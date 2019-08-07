@@ -178,4 +178,3 @@ class BaseRole():
                 raise RoleCreateError(
                     "Config '{project}' has invalid keys.".format(project=project))
         return objs
-

@@ -1,6 +1,7 @@
 from invoke import task, Collection
 from tesserarius.roles import BaseRole, RoleCreateError
-from tesserarius.utils import get_gcloud_wide_flags, get_settings
+from tesserarius.utils import get_gcloud_wide_flags, \
+    get_settings, task_template
 
 
 class PlatformRole(BaseRole):
@@ -42,31 +43,35 @@ class PlatformRole(BaseRole):
         return [PlatformRole(base=b) for b in base_objs]
 
 
-@task
-def create(ctx):
+@task(help={
+    "name" : "The name of the role to handle",
+})
+def create(ctx, name=None):
     '''
-    Creates an Google Cloud IAM Role on rehive-core
+    Creates a Google Cloud IAM role on rehive-core
     '''
-    for sa in PlatformRole.create_objs():
-        sa.create(ctx)
+    task_template(PlatformRole, "create", [ctx,], name=name)
 
 
-@task
-def update(ctx):
+@task(help={
+    "name" : "The name of the role to handle",
+})
+def delete(ctx, name=None):
     '''
-    Updates an Google Cloud IAM Role on rehive-core
+    Deletes a Google Cloud IAM role on rehive-core
     '''
-    for sa in PlatformRole.create_objs():
-        sa.update(ctx)
+    task_template(PlatformRole, "delete", [ctx,], name=name)
 
 
-@task
-def delete(ctx):
+@task(help={
+    "name" : "The name of the role to handle",
+})
+def update(ctx, name=None):
     '''
-    Deletes an Google Cloud IAM Role on rehive-core
+    Updates a Google Cloud IAM role on rehive-core
     '''
-    for sa in PlatformRole.create_objs():
-        sa.delete(ctx)
+    task_template(PlatformRole, "update", [ctx,], name=name)
+
 
 collection = Collection("roles")
 collection.add_task(create, "create")
