@@ -110,8 +110,19 @@ def bind(ctx, name=None):
     task_template(ExtensionsServiceAccount, "bind", [ctx,], name=name)
 
 
+@task(help={
+    "name" : "The name of the service account to handle",
+    "bucket" : "The GCS bucket the service account should own",
+})
+def chown(ctx, name, bucket):
+    '''
+    Changes ownership of a GCS bucket to an IAM service account on rehive-services
+    '''
+    task_template(ExtensionsServiceAccount, "chown", [ctx, bucket,], name=name)
+
 collection = Collection("serviceaccount")
 collection.add_task(bind, "bind")
+collection.add_task(chown, "chown")
 collection.add_task(create, "create")
 collection.add_task(delete, "delete")
 collection.add_task(update, "update")

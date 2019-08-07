@@ -209,6 +209,56 @@ class BaseServiceAccount():
             print("FAILED! [Operation cancelled by user]")
 
 
+    def chown(self, ctx, bucket):
+        """
+        Upload key file to Kubernetes Cluster as a secrets
+        """
+        print("\nChanging ownership of '{bucket}' to '{name}' ... "
+              .format(name=self.name, bucket=bucket), end="")
+        self.get_emailaddress()
+        key_file = "var/tesserarius/" + self.name + ".json"
+        key_file = abspath(key_file)
+
+        commands = [
+            {
+                "cmd" : "gcloud iam service-accounts describe {emailaddress} " \
+                    " --project {project_id}",
+                "format" : {
+                    "emailaddress" : self.emailaddress,
+                    "project_id" : self.project_id,
+                },
+            },
+            {
+                "cmd" : "gsutil ls gs://{bucket}",
+                "format" : {
+                    "bucket" : bucket,
+                },
+            },
+            {
+                "cmd" : "gsutil defacl set private gs://{bucket}",
+                "format" : {
+                    "bucket" : bucket,
+                },
+            },
+            {
+                "cmd" : "gsutil defacl ch -u {email}:owner gs://{bucket}",
+                "format" : {
+                    "bucket" : bucket,
+                    "email" : self.emailaddress,
+                },
+            },
+        ]
+        try:
+            for op in commands:
+                result = ctx.run(op["cmd"].format(**op["format"]),
+                                 echo=False, out_stream=tout(), err_stream=terr())
+            print("SUCCESS!")
+        except (Failure, UnexpectedExit,):
+            print("FAILED! [Operation Failed]")
+        except ParseError:
+            print("FAILED! [Operation cancelled by user]")
+
+
     def upload(self, ctx, namespace, secret):
         """
         Upload key file to Kubernetes Cluster as a secrets
@@ -256,7 +306,7 @@ class BaseServiceAccount():
             },
             {
                 "cmd" : "kubectl create secret generic {secret} " \
-                    " --from-file={secret}.json={key_file}"
+                    " --from-file={secret}.json={key_file}" \
                     " --namespace {namespace}",
                 "format" : {
                     "key_file" : key_file,
@@ -271,10 +321,11 @@ class BaseServiceAccount():
                 },
             },
         ]
+
         try:
             for op in commands:
                 result = ctx.run(op["cmd"].format(**op["format"]),
-                    echo=False, out_stream=tout(), err_stream=terr())
+                                 echo=False, out_stream=tout(), err_stream=terr())
             print("SUCCESS!")
         except (Failure, UnexpectedExit,):
             print("FAILED! [Operation Failed]")

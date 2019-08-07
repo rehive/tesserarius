@@ -104,12 +104,24 @@ def upload(ctx, name, namespace, secret):
     Uploads a Google Cloud IAM Service Account private key to
     k8s namespace as a generic secret on rehive-core
     '''
-    task_template(ExtensionsServiceAccount, "upload",
+    task_template(PlatformServiceAccount, "upload",
                   [ctx, namespace, secret,], name=name)
+
+
+@task(help={
+    "name" : "The name of the service account to handle",
+    "bucket" : "The GCS bucket the service account should own",
+})
+def chown(ctx, name, bucket):
+    '''
+    Changes ownership of a GCS bucket to an IAM service account on rehive-core
+    '''
+    task_template(PlatformServiceAccount, "chown", [ctx, bucket], name=name)
 
 
 collection = Collection("serviceaccount")
 collection.add_task(bind, "bind")
+collection.add_task(chown, "chown")
 collection.add_task(create, "create")
 collection.add_task(delete, "delete")
 collection.add_task(update, "update")
