@@ -93,7 +93,8 @@ def update(ctx, name=None):
 })
 def upload(ctx, name, namespace, secret):
     '''
-    Updates a Google Cloud IAM Service Account on rehive-services
+    Uploads a Google Cloud IAM Service Account private key to
+    k8s namespace as a generic secret on rehive-services
     '''
     task_template(ExtensionsServiceAccount, "upload",
                   [ctx, namespace, secret,], name=name)

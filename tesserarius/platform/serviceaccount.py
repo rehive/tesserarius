@@ -59,7 +59,7 @@ class PlatformServiceAccount(BaseServiceAccount):
 })
 def create(ctx, name=None):
     '''
-    Creates a Google Cloud IAM Service Account on rehive-services
+    Creates a Google Cloud IAM Service Account on rehive-core
     '''
     task_template(PlatformServiceAccount, "create", [ctx,], name=name)
 
@@ -69,7 +69,7 @@ def create(ctx, name=None):
 })
 def delete(ctx, name=None):
     '''
-    Deletes a Google Cloud IAM Service Account on rehive-services
+    Deletes a Google Cloud IAM Service Account on rehive-core
     '''
     task_template(PlatformServiceAccount, "delete", [ctx,], name=name)
 
@@ -79,7 +79,7 @@ def delete(ctx, name=None):
 })
 def update(ctx, name=None):
     '''
-    Updates a Google Cloud IAM Service Account on rehive-services
+    Updates a Google Cloud IAM Service Account on rehive-core
     '''
     task_template(PlatformServiceAccount, "update", [ctx,], name=name)
 
@@ -89,7 +89,7 @@ def update(ctx, name=None):
 })
 def bind(ctx, name=None):
     '''
-    Binds a Google Cloud IAM Service Account on rehive-services
+    Binds a Google Cloud IAM Service Account on rehive-core
     '''
     task_template(PlatformServiceAccount, "bind", [ctx,], name=name)
 
@@ -101,7 +101,8 @@ def bind(ctx, name=None):
 })
 def upload(ctx, name, namespace, secret):
     '''
-    Updates a Google Cloud IAM Service Account on rehive-services
+    Uploads a Google Cloud IAM Service Account private key to
+    k8s namespace as a generic secret on rehive-core
     '''
     task_template(ExtensionsServiceAccount, "upload",
                   [ctx, namespace, secret,], name=name)
