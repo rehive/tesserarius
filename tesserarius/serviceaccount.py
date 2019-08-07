@@ -169,21 +169,43 @@ class BaseServiceAccount():
         print("\nBinding service account '{name}' ... ".format(name=self.name),
               end="")
         self.get_emailaddress()
-        command = "gcloud projects add-iam-policy-binding {project_id}" \
+        commands = [
+            {
+                "cmd": "gcloud iam service-accounts describe {emailaddress}" \
+                    " --project {project_id}",
+                "format" : {
+                    "emailaddress" : self.emailaddress,
+                    "project_id" : self.project_id,
+                },
+            },
+            {
+                "cmd": "gcloud iam roles describe {role}" \
+                    " --project {project_id}",
+                "format" : {
+                    "project_id" : self.project_id,
+                    "role" : self.role,
+                },
+            },
+            {
+                "cmd": "gcloud projects add-iam-policy-binding {project_id}" \
                     " --member=serviceAccount:{emailaddress}" \
                     " --role=projects/{project_id}/roles/{role}"
+                    " --project {project_id}",
+                "format" : {
+                    "emailaddress" : self.emailaddress,
+                    "project_id" : self.project_id,
+                    "role" : self.role,
+                },
+            },
+        ]
         try:
-            result = ctx.run(command.format(
-                emailaddress=self.emailaddress,
-                role=self.role,
-                project_id=self.project_id),
-            echo=False,out_stream=tout(), err_stream=terr())
+            for op in commands:
+                result = ctx.run(op["cmd"].format(**op["format"]),
+                    echo=False, out_stream=tout(), err_stream=terr())
             print("SUCCESS!")
         except (Failure, UnexpectedExit,):
-            self.emailaddress = None
             print("FAILED! [Operation Failed]")
         except ParseError:
-            self.emailaddress = None
             print("FAILED! [Operation cancelled by user]")
 
 
