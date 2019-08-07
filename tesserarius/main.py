@@ -1,8 +1,15 @@
 import pkg_resources
+
 from invoke import Argument, Collection, Program
+from tesserarius.tasks import collection
+from tesserarius.extensions import collection as extensions_collection
+from tesserarius.platform import collection as platform_collection
 
-from tesserarius import namespace
 
+namespace = Collection()
+namespace.add_collection(extensions_collection)
+namespace.add_collection(platform_collection)
+namespace.add_collection(collection)
 
 class MainProgram(Program):
     def core_args(self):
