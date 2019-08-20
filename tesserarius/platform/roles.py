@@ -38,7 +38,7 @@ class PlatformRole(BaseRole):
 
 
     @staticmethod
-    def create_objs(project="extensions"):
+    def create_objs(project="platform"):
         base_objs = BaseRole.create_objs(project)
         return [PlatformRole(base=b) for b in base_objs]
 

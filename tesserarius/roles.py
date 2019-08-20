@@ -77,7 +77,7 @@ class BaseRole():
             try:
                 result = ctx.run(command.format(name=self.name,
                     title=self.title,
-                    permissions=self.permissions_str,
+                    permissions=permissions_str,
                     stage=self.stage,
                     description=self.description,
                     project_id=self.project_id),
