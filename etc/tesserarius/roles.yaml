@@ -72,6 +72,17 @@ platform:
     - container.secrets.get
     - container.secrets.list
     - container.secrets.update
+    - logging.exclusions.get
+    - logging.exclusions.list
+    - logging.logEntries.list
+    - logging.logMetrics.get
+    - logging.logMetrics.list
+    - logging.logServiceIndexes.list
+    - logging.logServices.list
+    - logging.logs.list
+    - logging.sinks.get
+    - logging.sinks.list
+    - logging.usage.get
     - resourcemanager.projects.get
     - serviceusage.services.use
     - storage.buckets.get
@@ -79,6 +90,18 @@ platform:
     - storage.objects.create
     - storage.objects.get
     - storage.objects.list
+  - name: platform.bucket.writer
+    description: 'Role for Writing to GCS Buckets'
+    stage: ALPHA
+    title: 'Storage Bucket Writer'
+    addPermissions: []
+    removePermissions: []
+    permissions:
+    - storage.buckets.get
+    - storage.objects.create
+    - storage.objects.delete
+    - storage.objects.list
+    - storage.objects.update
 extensions:
   roles:
   - name: extensions.team.developer
@@ -153,6 +176,17 @@ extensions:
     - container.secrets.get
     - container.secrets.list
     - container.secrets.update
+    - logging.exclusions.get
+    - logging.exclusions.list
+    - logging.logEntries.list
+    - logging.logMetrics.get
+    - logging.logMetrics.list
+    - logging.logServiceIndexes.list
+    - logging.logServices.list
+    - logging.logs.list
+    - logging.sinks.get
+    - logging.sinks.list
+    - logging.usage.get
     - resourcemanager.projects.get
     - serviceusage.services.use
     - storage.buckets.get
@@ -160,3 +194,15 @@ extensions:
     - storage.objects.create
     - storage.objects.get
     - storage.objects.list
+  - name: extensions.bucket.writer
+    description: 'Role for Writing in GCS Buckets'
+    stage: ALPHA
+    title: 'Storage Bucket Writer'
+    addPermissions: []
+    removePermissions: []
+    permissions:
+    - storage.buckets.get
+    - storage.objects.create
+    - storage.objects.delete
+    - storage.objects.list
+    - storage.objects.update

@@ -5,25 +5,21 @@ staging:
     zone: europe-west1-c
   kubernetes:
     cluster: staging
-    namespace: tesserarius-staging
+    namespace: tesserarius
 extensions:
   serviceAccount:
   - name: service-product-media
     displayName: "Product Service Media Writer"
     description: "Service account for the Product Service to write to the Media Bucket"
-    role: product.media.writer
-  - name: service-product-staging
-    displayName: "Product Service Admin"
-    description: "Default Service account for the Product Service"
-    role: product.default.user
+    role: extensions.bucket.writer
   - name: service-test-media
     displayName: "Test Service Media Writer"
     description: "Service account for the Test Service to write to the Media Bucket"
-    role: test.media.writer
+    role: extensions.bucket.writer
   - name: service-product-media-staging
     displayName: "Product Service Media Writer"
     description: "Service Account for the Product Service on staging to write to the Media Bucket"
-    role: product.media.writer
+    role: extensions.bucket.writer
   bindings:
   - members:
     - user:bjorn@rehive.com
@@ -36,7 +32,7 @@ platform:
   - name: platform-pgbackup
     displayName: "Platform Developer"
     description: "Service Account for the Platform Developer"
-    role: patroni.backup.writer
+    role: platform.bucket.writer
   bindings:
   - members:
     - user:connor@rehive.com
