@@ -28,7 +28,7 @@ RUN set -ex \
         curl-dev \
     && apk add --no-cache --update python python3 git bash \
     && ln -s /usr/include/locale.h /usr/include/xlocale.h \
-    && pip3 install --upgrade pip setuptools rdeploy \
+    && pip3 install --upgrade pip setuptools rdeploy>=0.0.17 \
     && curl -sSL https://sdk.cloud.google.com | sh \
     && mkdir /opt \
     && mv /root/google-cloud-sdk /opt/ \
