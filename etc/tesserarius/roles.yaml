@@ -9,7 +9,34 @@ platform:
     permissions:
     - cloudbuild.builds.create
     - cloudbuild.builds.get
+    - container.apiServices.get
+    - container.apiServices.list
+    - container.backendConfigs.get
+    - container.backendConfigs.list
+    - container.bindings.get
+    - container.bindings.list
+    - container.certificateSigningRequests.get
+    - container.certificateSigningRequests.list
+    - container.clusterRoleBindings.get
+    - container.clusterRoleBindings.list
+    - container.clusterRoles.get
+    - container.clusterRoles.list
     - container.clusters.get
+    - container.clusters.list
+    - container.componentStatuses.get
+    - container.componentStatuses.list
+    - container.configMaps.get
+    - container.configMaps.list
+    - container.controllerRevisions.get
+    - container.controllerRevisions.list
+    - container.cronJobs.get
+    - container.cronJobs.getStatus
+    - container.cronJobs.list
+    - container.customResourceDefinitions.get
+    - container.customResourceDefinitions.list
+    - container.daemonSets.get
+    - container.daemonSets.getStatus
+    - container.daemonSets.list
     - container.deployments.create
     - container.deployments.delete
     - container.deployments.get
@@ -30,6 +57,14 @@ platform:
     - container.events.get
     - container.events.list
     - container.events.update
+    - container.horizontalPodAutoscalers.get
+    - container.horizontalPodAutoscalers.getStatus
+    - container.horizontalPodAutoscalers.list
+    - container.ingresses.get
+    - container.ingresses.getStatus
+    - container.ingresses.list
+    - container.initializerConfigurations.get
+    - container.initializerConfigurations.list
     - container.jobs.create
     - container.jobs.delete
     - container.jobs.get
@@ -37,11 +72,20 @@ platform:
     - container.jobs.list
     - container.jobs.update
     - container.jobs.updateStatus
+    - container.limitRanges.get
+    - container.limitRanges.list
     - container.namespaces.get
     - container.namespaces.getStatus
     - container.namespaces.list
     - container.namespaces.update
     - container.namespaces.updateStatus
+    - container.networkPolicies.get
+    - container.networkPolicies.list
+    - container.nodes.get
+    - container.nodes.getStatus
+    - container.nodes.list
+    - container.operations.get
+    - container.operations.list
     - container.persistentVolumeClaims.create
     - container.persistentVolumeClaims.delete
     - container.persistentVolumeClaims.get
@@ -55,6 +99,17 @@ platform:
     - container.persistentVolumes.list
     - container.persistentVolumes.update
     - container.persistentVolumes.updateStatus
+    - container.petSets.get
+    - container.petSets.list
+    - container.podDisruptionBudgets.get
+    - container.podDisruptionBudgets.getStatus
+    - container.podDisruptionBudgets.list
+    - container.podPresets.get
+    - container.podPresets.list
+    - container.podSecurityPolicies.get
+    - container.podSecurityPolicies.list
+    - container.podTemplates.get
+    - container.podTemplates.list
     - container.pods.attach
     - container.pods.create
     - container.pods.delete
@@ -68,10 +123,42 @@ platform:
     - container.pods.portForward
     - container.pods.update
     - container.pods.updateStatus
+    - container.replicaSets.get
+    - container.replicaSets.getScale
+    - container.replicaSets.getStatus
+    - container.replicaSets.list
+    - container.replicationControllers.get
+    - container.replicationControllers.getScale
+    - container.replicationControllers.getStatus
+    - container.replicationControllers.list
+    - container.resourceQuotas.get
+    - container.resourceQuotas.getStatus
+    - container.resourceQuotas.list
+    - container.roleBindings.get
+    - container.roleBindings.list
+    - container.roles.get
+    - container.roles.list
+    - container.scheduledJobs.get
+    - container.scheduledJobs.list
     - container.secrets.create
     - container.secrets.get
     - container.secrets.list
     - container.secrets.update
+    - container.serviceAccounts.get
+    - container.serviceAccounts.list
+    - container.services.get
+    - container.services.getStatus
+    - container.services.list
+    - container.statefulSets.get
+    - container.statefulSets.getStatus
+    - container.statefulSets.list
+    - container.storageClasses.get
+    - container.storageClasses.list
+    - container.thirdPartyObjects.get
+    - container.thirdPartyObjects.list
+    - container.thirdPartyResources.get
+    - container.thirdPartyResources.list
+    - container.tokenReviews.create
     - logging.exclusions.get
     - logging.exclusions.list
     - logging.logEntries.list
