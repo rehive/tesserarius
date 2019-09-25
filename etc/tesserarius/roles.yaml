@@ -145,6 +145,7 @@ extensions:
     - container.namespaces.getStatus
     - container.namespaces.list
     - container.namespaces.update
+    - container.namespaces.create
     - container.namespaces.updateStatus
     - container.persistentVolumeClaims.create
     - container.persistentVolumeClaims.delete
