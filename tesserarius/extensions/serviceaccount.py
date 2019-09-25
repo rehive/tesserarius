@@ -25,7 +25,7 @@ class ExtensionsServiceAccount(BaseServiceAccount):
 
         Example: service-product-media, service-product-pgbackup-staging
         """
-        service_name = r'[a-z]{3,10}(_[a-z]{3,10}){,2}'
+        service_name = r'[a-z]{3,10}(-[a-z]{3,10}){,2}'
         name_pattern = r"service-{name}({base})?"\
             .format(name=service_name, base=BASE_NAME_PATTERN)
         if name is not None and display_name is not None:
