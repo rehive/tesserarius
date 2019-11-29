@@ -127,6 +127,7 @@ platform:
     - container.replicaSets.getScale
     - container.replicaSets.getStatus
     - container.replicaSets.list
+    - container.replicaSets.updateScale
     - container.replicationControllers.get
     - container.replicationControllers.getScale
     - container.replicationControllers.getStatus
@@ -266,6 +267,7 @@ extensions:
     - container.limitRanges.get
     - container.limitRanges.list
     - container.namespaces.get
+    - container.namespaces.create
     - container.namespaces.getStatus
     - container.namespaces.list
     - container.namespaces.update
@@ -318,6 +320,7 @@ extensions:
     - container.replicaSets.getScale
     - container.replicaSets.getStatus
     - container.replicaSets.list
+    - container.replicaSets.updateScale
     - container.replicationControllers.get
     - container.replicationControllers.getScale
     - container.replicationControllers.getStatus
