@@ -20,10 +20,18 @@ extensions:
     displayName: "Test Service Media Writer"
     description: "Service account for the Test Service to write to the Media Bucket"
     role: test.media.writer
-  - name: service-product-media-staging
+  - name: service-product-staging-media
     displayName: "Product Service Media Writer"
     description: "Service Account for the Product Service on staging to write to the Media Bucket"
     role: product.media.writer
+  - name: service-builder-staging-wale
+    displayName: "Builder Service Postgres Writer"
+    description: "Service Account for the Builder Service on staging to write backups for the wal-E bucket"
+    role: extensions.backup.writer
+  - name: service-builder-wale
+    displayName: "Builder Service Postgres Writer"
+    description: "Service Account for the Builder Service on staging to write backups for the wal-E bucket"
+    role: extensions.backup.writer
   bindings:
   - members:
     - user:bjorn@rehive.com
