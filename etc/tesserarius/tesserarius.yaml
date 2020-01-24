@@ -32,6 +32,14 @@ extensions:
     displayName: "Builder Service Postgres Writer"
     description: "Service Account for the Builder Service on staging to write backups for the wal-E bucket"
     role: extensions.backup.writer
+  - name: service-billing-wale
+    displayName: "Builder Service Postgres Writer"
+    description: "Service Account for the Billing Service on production to write backups for the wal-E bucket"
+    role: extensions.backup.writer
+  - name: service-billing-staging-wale
+    displayName: "Billing Service Postgres Writer"
+    description: "Service Account for the Billing Service on staging to write backups for the wal-E bucket"
+    role: extensions.backup.writer
   bindings:
   - members:
     - user:bjorn@rehive.com
