@@ -1,4 +1,4 @@
-__version__ = '0.0.2-rc.1'
+__version__ = '0.0.2-rc.2'
 __url__ = 'https://github.com/rehive/tesserarius',
 __author__ = 'Mwangi'
 __email__ = 'info@rehive.com'
