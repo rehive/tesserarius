@@ -1,7 +1,5 @@
-__version__ = '0.0.2-rc.4'
-__url__ = 'https://github.com/rehive/tesserarius',
+__version__ = '0.0.2-rc.5'
+__url__ = 'https://github.com/rehive/tesserarius/'
 __author__ = 'Mwangi'
 __email__ = 'info@rehive.com'
 __license__ = 'MIT License'
-
-
