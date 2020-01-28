@@ -40,48 +40,35 @@ class BaseRole():
 
 
     def __str__(self):
-        return "name: {name}, " \
-            "title: {title}, " \
-            "stage: {stage}, " \
-            "project_id: {project_id}, " \
-            "permissions: {permissions}, " \
-            "remove_permissions: {remove_permissions}, " \
-            "add_permissions: {add_permissions}, " \
-            "description: {description}".format(
-                name=self.name,
-                title=self.title,
-                project_id=self.project_id,
-                add_permissions=self.add_permissions,
-                remove_permissions=self.remove_permissions,
-                permissions=self.permissions,
-                stage=self.stage,
-                description=self.description)
+        return f"name: {self.name}, "
+            f"title: {self.title}, "
+            f"stage: {self.stage}, "
+            f"project_id: {self.project_id}, "
+            f"permissions: {self.permissions!s}, "
+            f"remove_permissions: {self.remove_permissions!s}, "
+            f"add_permissions: {self.add_permissions!s}, "
+            f"description: {self.description}"
 
 
     def create(self, ctx):
         """
         Creates an IAM GCloud Service Account
         """
-        print("\nCreating role '{name}' ... ".format(name=self.name),
+        print(f"\nCreating role '{self.name}' ... ",
               end="")
-        command = "gcloud iam roles create {name}" \
-                    " --title \"{title}\"" \
-                    " --permissions \"{permissions}\"" \
-                    " --stage \"{stage}\"" \
-                    " --description \"{description}\"" \
-                    " --verbosity debug " \
-                    " --project {project_id}"
-
         permissions_str = ",".join(self.permissions)
+        command = f"gcloud iam roles create {self.name}"
+                    f" --title \"{self.title}\""
+                    f" --permissions \"{permissions_str}\""
+                    f" --stage \"{self.stage}\""
+                    f" --description \"{self.description}\""
+                    f" --verbosity debug "
+                    f" --project {self.project_id}"
+
         if not self.created:
             try:
-                result = ctx.run(command.format(name=self.name,
-                    title=self.title,
-                    permissions=permissions_str,
-                    stage=self.stage,
-                    description=self.description,
-                    project_id=self.project_id),
-                echo=False, out_stream=tout(), err_stream=terr())
+                result = ctx.run(command, echo=False,
+                                 out_stream=tout(), err_stream=terr())
                 self.created = True
                 print("SUCCESS!")
             except (Failure, UnexpectedExit,):
@@ -95,31 +82,24 @@ class BaseRole():
         """
         Updates an IAM GCloud Service Account
         """
-        print("\nUpdating role '{name}' ... ".format(name=self.name),
+        print(f"\nUpdating role '{self.name}' ... ",
               end="")
-        command = "gcloud iam roles update {name}" \
-                    " --title \"{title}\"" \
-                    " --permissions \"{permissions}\"" \
-                    " --add-permissions \"{add_permissions}\"" \
-                    " --remove-permissions \"{remove_permissions}\"" \
-                    " --stage \"{stage}\"" \
-                    " --description \"{description}\"" \
-                    " --verbosity debug " \
-                    " --project {project_id}"
-
         permissions_str = ",".join(self.permissions)
         add_permissions_str = ",".join(self.add_permissions)
         remove_permissions_str = ",".join(self.remove_permissions)
+        command = f"gcloud iam roles update {self.name}"
+                    f" --title \"{self.title}\""
+                    f" --permissions \"{permissions_str}\""
+                    f" --add-permissions \"{add_permissions_str}\""
+                    f" --remove-permissions \"{remove_permissions_str}\""
+                    f" --stage \"{self.stage}\""
+                    f" --description \"{self.description}\""
+                    f" --verbosity debug "
+                    f" --project {self.project_id}"
+
         try:
-            result = ctx.run(command.format(name=self.name,
-                title=self.title,
-                permissions=permissions_str,
-                add_permissions=add_permissions_str,
-                remove_permissions=remove_permissions_str,
-                stage=self.stage,
-                description=self.description,
-                project_id=self.project_id),
-            echo=False, out_stream=tout(), err_stream=terr())
+            result = ctx.run(command, echo=False,
+                             out_stream=tout(), err_stream=terr())
             print("SUCCESS!")
         except (Failure, UnexpectedExit,):
             self.emailaddress = None
@@ -130,20 +110,17 @@ class BaseRole():
         """
         Deletes an IAM GCloud IAM Role
         """
-        print("\nDeleting role '{name}' ... ".format(name=self.name),
-              end="")
+        print(f"\nDeleting role '{self.name}' ... ", end="")
         self.get_emailaddress()
-        command = "gcloud iam roles delete {name}" \
-                    " --verbosity debug " \
-                    " --project {project_id}"
+        command = f"gcloud iam roles delete {self.name}" \
+                    f" --verbosity debug " \
+                    f" --project {self.project_id}"
 
         try:
-            confirm("\nAre you sure you want to delete role '{name}'? (y/n) "
-                    .format(name=self.name))
-            result = ctx.run(command.format(
-                name=self.name,
-                project_id=self.project_id),
-            echo=False,out_stream=tout(), err_stream=terr())
+            confirm(
+                f"\nAre you sure you want to delete role '{self.name}'? (y/n) ")
+            result = ctx.run(command, echo=False,
+                             out_stream=tout(), err_stream=terr())
             print("SUCCESS!")
         except (Failure, UnexpectedExit,):
             self.emailaddress = None

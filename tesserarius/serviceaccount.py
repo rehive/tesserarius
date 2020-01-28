@@ -60,9 +60,12 @@ class BaseServiceAccount:
         Example: staging, media-staging, pgbackup, pgbackup-staging
         """
         if not match(rf"^{self.name_pattern}$", self.name):
-            raise ServiceAccountValidationError(f"Invalid account name. {self.name} doesn't fit standard '{self.name_pattern}'")
+            raise ServiceAccountValidationError(
+                f"Invalid account name. {self.name} "
+                f"doesn't fit standard '{self.name_pattern}'")
         if len(self.name) >= 30:
-            raise ServiceAccountValidationError(f"Account name '{self.name}' is too long (max length: 30).")
+            raise ServiceAccountValidationError(
+                f"Account name '{self.name}' is too long (max length: 30).")
 
     def get_emailaddress(self):
         self.emailaddress = f"{self.name}@{self.project_id}.iam.gserviceaccount.com"
@@ -165,51 +168,37 @@ class BaseServiceAccount:
         except ParseError:
             print("FAILED! [Operation cancelled by user]")
 
-<<<<<<< HEAD
 
     def chown(self, ctx, bucket):
         """
         Upload key file to Kubernetes Cluster as a secrets
         """
-        print("\nChanging ownership of '{bucket}' to '{name}' ... "
-              .format(name=self.name, bucket=bucket), end="")
+        print(f"\nChanging ownership of '{bucket}' to '{self.name}' ... ",
+              end="")
         self.get_emailaddress()
         key_file = "var/tesserarius/" + self.name + ".json"
         key_file = abspath(key_file)
 
         commands = [
             {
-                "cmd" : "gcloud iam service-accounts describe {emailaddress} " \
-                    " --project {project_id}",
-                "format" : {
-                    "emailaddress" : self.emailaddress,
-                    "project_id" : self.project_id,
-                },
+                "cmd" : f"gcloud iam service-accounts describe {self.emailaddress} " \
+                        f" --project {project_id}",
             },
             {
-                "cmd" : "gsutil ls gs://{bucket}",
-                "format" : {
-                    "bucket" : bucket,
-                },
+                "cmd" : f"gsutil ls gs://{bucket}",
             },
             {
-                "cmd" : "gsutil defacl set private gs://{bucket}",
-                "format" : {
-                    "bucket" : bucket,
-                },
+                "cmd" : f"gsutil defacl set private gs://{bucket}",
             },
             {
-                "cmd" : "gsutil defacl ch -u {email}:owner gs://{bucket}",
-                "format" : {
-                    "bucket" : bucket,
-                    "email" : self.emailaddress,
-                },
+                "cmd" : f"gsutil defacl ch -u {self.emailaddress}:owner "
+                        f" gs://{bucket}",
             },
         ]
         try:
             for op in commands:
-                result = ctx.run(op["cmd"].format(**op["format"]),
-                                 echo=False, out_stream=tout(), err_stream=terr())
+                result = ctx.run(op["cmd"], echo=False,
+                                 out_stream=tout(), err_stream=terr())
             print("SUCCESS!")
         except (Failure, UnexpectedExit,):
             print("FAILED! [Operation Failed]")
@@ -217,10 +206,11 @@ class BaseServiceAccount:
             print("FAILED! [Operation cancelled by user]")
 
 
-    def upload(self, ctx, namespace, secret):
+    def upload(self, ctx, environment, secret):
         """
         Upload key file to Kubernetes Cluster as a secrets
         """
+        settings_dict = get_settings()
         print(f"\nUploading private key for '{self.name}' ... ", end="")
         self.get_emailaddress()
         key_file = "var/tesserarius/" + self.name + ".json"
@@ -228,8 +218,9 @@ class BaseServiceAccount:
 
         commands = [
             {
-                "cmd":
-                    f"gcloud iam service-accounts describe {self.emailaddress} --project {self.project_id}",
+                "cmd": f"gcloud iam service-accounts describe "
+                    f"{self.emailaddress} "
+                    f"--project {self.project_id}",
             },
             {
                 "cmd": f"kubectl get namespace {namespace} -o name",
