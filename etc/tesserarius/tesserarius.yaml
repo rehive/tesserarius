@@ -1,32 +1,25 @@
 version: 1
 staging:
   gcloud:
-    project: rehive-services
+    project: project-id
     zone: europe-west1-c
   kubernetes:
     cluster: staging
     namespace: tesserarius
 extensions:
   serviceAccount:
-  - name: service-product-media
-    displayName: "Product Service Media Writer"
-    description: "Service account for the Product Service to write to the Media Bucket"
-    role: extensions.bucket.writer
   - name: service-test-media
     displayName: "Test Service Media Writer"
     description: "Service account for the Test Service to write to the Media Bucket"
     role: extensions.bucket.writer
-  - name: service-product-media-staging
+  - name: service-test-media-staging
     displayName: "Product Service Media Writer"
     description: "Service Account for the Product Service on staging to write to the Media Bucket"
     role: extensions.bucket.writer
   bindings:
   - members:
-    - user:bjorn@rehive.com
-    - user:connor@rehive.com
-    - user:matthew@rehive.com
-    - user:michael@rehive.com
-    role: projects/rehive-services/roles/extensions.team.developer
+    - user:test@rehive.com
+    role: projects/project-id/roles/extensions.team.developer
 platform:
   serviceAccount:
   - name: platform-pgbackup
@@ -35,6 +28,5 @@ platform:
     role: platform.bucket.writer
   bindings:
   - members:
-    - user:connor@rehive.com
-    - user:matthew@rehive.com
+    - user: test@rehive.com
     role: projects/rehive-core/roles/platform.team.developer

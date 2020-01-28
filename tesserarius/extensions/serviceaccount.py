@@ -23,11 +23,10 @@ class ExtensionsServiceAccount(BaseServiceAccount):
         short name for the service account describing its purpose.
         <role_name> pattern is defined in the tesserarius.serviceaccount
 
-        Example: service-product-media, service-product-pgbackup-staging
+        Example: service-product-media, service-product-staging-pgbackup
         """
-        service_name = r'[a-z]{3,10}(-[a-z]{3,10}){,2}'
-        name_pattern = r"service-{name}({base})?"\
-            .format(name=service_name, base=BASE_NAME_PATTERN)
+        service_name = r'[a-z]{3,10}(_[a-z]{3,10}){,2}'
+        name_pattern = rf"service({BASE_NAME_PATTERN})?-{service_name}$"
         if name is not None and display_name is not None:
             super().__init__(name=name,
                   display_name=display_name,

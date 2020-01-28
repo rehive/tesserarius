@@ -6,7 +6,8 @@ from invoke.exceptions import Failure, UnexpectedExit, ParseError
 from tesserarius.utils import get_error_stream as terr, \
     get_out_stream as tout, confirm
 
-BASE_NAME_PATTERN = r'((-staging)?$)|(-[a-z]{3,10}(-staging)?$)'
+BASE_NAME_PATTERN = r'((-staging)?)|(-[a-z]{3,10}(-staging)?)'
+
 
 class ServiceAccountValidationError(Exception):
     pass
@@ -16,7 +17,7 @@ class ServiceAccountCreateError(Exception):
     pass
 
 
-class BaseServiceAccount():
+class BaseServiceAccount:
     project_id = None
     name = None
     emailaddress = None
@@ -42,20 +43,12 @@ class BaseServiceAccount():
         if name_pattern is None:
             self.name_pattern = BASE_NAME_PATTERN
 
-
     def __str__(self):
-        return "account_name: {name}, " \
-                "display_name: {display_name}, "\
-                "project_id: {project_id}, "\
-                "role: {role}, "\
-                "description: {description}".format(
-                    name=self.name,
-                    display_name=self.display_name,
-                    project_id=self.project_id,
-                    role=self.role,
-                    description=self.description
-                )
-
+        return f"account_name: {self.name}, "\
+            f"display_name: {self.display_name}, "\
+            f"project_id: {self.project_id}, "\
+            f"role: {self.role}, "\
+            f"description: {self.description}"
 
     def _check_name(self):
         """
@@ -66,37 +59,30 @@ class BaseServiceAccount():
         short name for the service account describing its purpose.
         Example: staging, media-staging, pgbackup, pgbackup-staging
         """
-        if not match(r"^{}$".format(self.name_pattern), self.name):
-            raise ServiceAccountValidationError("Invalid account name.")
-
+        if not match(rf"^{self.name_pattern}$", self.name):
+            raise ServiceAccountValidationError(f"Invalid account name. {self.name} doesn't fit standard '{self.name_pattern}'")
+        if len(self.name) >= 30:
+            raise ServiceAccountValidationError(f"Account name '{self.name}' is too long (max length: 30).")
 
     def get_emailaddress(self):
-        self.emailaddress = "{name}@{project_id}" \
-            ".iam.gserviceaccount.com".format(
-                name=self.name, project_id=self.project_id)
+        self.emailaddress = f"{self.name}@{self.project_id}.iam.gserviceaccount.com"
         return self.emailaddress
-
 
     def create(self, ctx):
         """
         Creates an IAM GCloud Service Account
         """
-        print("\nCreating service account '{name}' ... ".format(name=self.name),
-              end="")
-        command = "gcloud alpha iam service-accounts create {name}" \
-                    " --display-name \"{display_name}\"" \
-                    " --description \"{description}\"" \
-                    " --verbosity debug " \
-                    " --project {project_id}"
+        print(f"\nCreating service account '{self.name}' ... ", end="")
+        command = f"gcloud alpha iam service-accounts create {self.name}" \
+            f" --display-name \"{self.display_name}\"" \
+            f" --description \"{self.description}\"" \
+            f" --verbosity debug " \
+            f" --project {self.project_id}"
 
         if not self.created:
             try:
-                result = ctx.run(command.format(
-                    name=self.name,
-                    display_name=self.display_name,
-                    description=self.description,
-                    project_id=self.project_id),
-                echo=False,out_stream=tout(), err_stream=terr())
+                result = ctx.run(command,
+                                 echo=False, out_stream=tout(), err_stream=terr())
                 self.get_emailaddress()
                 self.created = True
                 print("SUCCESS!")
@@ -107,52 +93,39 @@ class BaseServiceAccount():
         elif self.created:
             print("FAILED! [SA already created]")
 
-
     def update(self, ctx):
         """
         Updates an IAM GCloud Service Account
         """
-        print("\nUpdating service account '{name}' ... ".format(name=self.name),
-              end="")
+        print(f"\nUpdating service account '{self.name}' ... ", end="")
         self.get_emailaddress()
-        command = "gcloud alpha iam service-accounts update {emailaddress}" \
-                    " --display-name \"{display_name}\"" \
-                    " --description \"{description}\"" \
-                    " --verbosity debug " \
-                    " --project {project_id}"
+        command = f"gcloud alpha iam service-accounts update {self.emailaddress}" \
+            f" --display-name \"{self.display_name}\"" \
+            f" --description \"{self.description}\"" \
+            f" --verbosity debug " \
+            f" --project {self.project_id}"
 
         try:
-            result = ctx.run(command.format(
-                emailaddress=self.emailaddress,
-                display_name=self.display_name,
-                description=self.description,
-                project_id=self.project_id),
-            echo=False,out_stream=tout(), err_stream=terr())
+            result = ctx.run(command, echo=False,out_stream=tout(), err_stream=terr())
             self.get_emailaddress()
             print("SUCCESS!")
         except (Failure, UnexpectedExit,):
             self.emailaddress = None
             print("FAILED! [Operation Failed]")
 
-
     def delete(self, ctx):
         """
         Deletes an IAM GCloud Service Account
         """
-        print("\nDeleting service account '{name}' ... ".format(name=self.name),
-              end="")
+        print(f"\nDeleting service account '{self.name}' ... ", end="")
         self.get_emailaddress()
-        command = "gcloud alpha iam service-accounts delete {emailaddress}" \
-                    " --verbosity debug " \
-                    " --project {project_id}"
+        command = f"gcloud alpha iam service-accounts delete {self.emailaddress}" \
+            f" --verbosity debug " \
+            f" --project {self.project_id}"
 
         try:
-            confirm("\nAre you sure you want to delete SA '{email}'? (y/n) "
-                    .format(email=self.emailaddress))
-            result = ctx.run(command.format(
-                emailaddress=self.emailaddress,
-                project_id=self.project_id),
-            echo=False,out_stream=tout(), err_stream=terr())
+            confirm(f"\nAre you sure you want to delete SA '{self.emailaddress}'? (y/n) ")
+            result = ctx.run(command, echo=False,out_stream=tout(), err_stream=terr())
             print("SUCCESS!")
         except (Failure, UnexpectedExit,):
             self.emailaddress = None
@@ -160,54 +133,39 @@ class BaseServiceAccount():
         except ParseError:
             self.emailaddress = None
             print("FAILED! [Operation cancelled by user]")
-
 
     def bind(self, ctx):
         """
         Bind an IAM GCloud Service Account
         """
-        print("\nBinding service account '{name}' ... ".format(name=self.name),
-              end="")
+        print(f"\nBinding service account '{self.name}' ... ", end="")
         self.get_emailaddress()
         commands = [
             {
-                "cmd": "gcloud iam service-accounts describe {emailaddress}" \
-                    " --project {project_id}",
-                "format" : {
-                    "emailaddress" : self.emailaddress,
-                    "project_id" : self.project_id,
-                },
+                "cmd": f"gcloud iam service-accounts describe {self.emailaddress}"
+                       f" --project {self.project_id}",
             },
             {
-                "cmd": "gcloud iam roles describe {role}" \
-                    " --project {project_id}",
-                "format" : {
-                    "project_id" : self.project_id,
-                    "role" : self.role,
-                },
+                "cmd": f"gcloud iam roles describe {self.role}"
+                       f" --project {self.project_id}",
             },
             {
-                "cmd": "gcloud projects add-iam-policy-binding {project_id}" \
-                    " --member=serviceAccount:{emailaddress}" \
-                    " --role=projects/{project_id}/roles/{role}"
-                    " --project {project_id}",
-                "format" : {
-                    "emailaddress" : self.emailaddress,
-                    "project_id" : self.project_id,
-                    "role" : self.role,
-                },
+                "cmd": f"gcloud projects add-iam-policy-binding {self.project_id}"
+                       f" --member=serviceAccount:{self.emailaddress}"
+                       f" --role=projects/{self.project_id}/roles/{self.role}"
+                       f" --project {self.project_id}",
             },
         ]
         try:
             for op in commands:
-                result = ctx.run(op["cmd"].format(**op["format"]),
-                    echo=False, out_stream=tout(), err_stream=terr())
+                result = ctx.run(op["cmd"], echo=False, out_stream=tout(), err_stream=terr())
             print("SUCCESS!")
         except (Failure, UnexpectedExit,):
             print("FAILED! [Operation Failed]")
         except ParseError:
             print("FAILED! [Operation cancelled by user]")
 
+<<<<<<< HEAD
 
     def chown(self, ctx, bucket):
         """
@@ -263,69 +221,42 @@ class BaseServiceAccount():
         """
         Upload key file to Kubernetes Cluster as a secrets
         """
-        print("\nUploading private key for '{name}' ... ".format(name=self.name),
-              end="")
+        print(f"\nUploading private key for '{self.name}' ... ", end="")
         self.get_emailaddress()
         key_file = "var/tesserarius/" + self.name + ".json"
         key_file = abspath(key_file)
 
         commands = [
             {
-                "cmd" : "gcloud iam service-accounts describe {emailaddress} " \
-                    " --project {project_id}",
-                "format" : {
-                    "emailaddress" : self.emailaddress,
-                    "project_id" : self.project_id,
-                },
+                "cmd":
+                    f"gcloud iam service-accounts describe {self.emailaddress} --project {self.project_id}",
             },
             {
-                "cmd" : "kubectl get namespace {namespace} -o name",
-                "format" : {
-                    "namespace" : namespace,
-                },
+                "cmd": f"kubectl get namespace {namespace} -o name",
             },
             {
-                "cmd" : "gcloud iam service-accounts keys create {key_file} " \
-                    " --iam-account={emailaddress}" \
-                    " --key-file-type=\"json\"" \
-                    " --project {project_id}",
-                "format" : {
-                    "key_file" : key_file,
-                    "emailaddress" : self.emailaddress,
-                    "project_id" : self.project_id,
-                },
+                "cmd": f"gcloud iam service-accounts keys create {key_file} "
+                    f" --iam-account={self.emailaddress}"
+                    f" --key-file-type=\"json\""
+                    f" --project {self.project_id}",
             },
             {
-                "cmd" : "kubectl delete secret {secret} " \
-                    " --namespace {namespace} || touch {key_file}",
-                "format" : {
-                    "secret" : secret,
-                    "key_file" : key_file,
-                    "namespace" : namespace,
-                },
+                "cmd": f"kubectl delete secret {secret} "
+                    f" --namespace {namespace} || touch {key_file}",
             },
             {
-                "cmd" : "kubectl create secret generic {secret} " \
-                    " --from-file={secret}.json={key_file}" \
-                    " --namespace {namespace}",
-                "format" : {
-                    "key_file" : key_file,
-                    "secret" : secret,
-                    "namespace" : namespace,
-                },
+                "cmd": f"kubectl create secret generic {secret} "
+                    f" --from-file={secret}.json={key_file}"
+                    f" --namespace {namespace}",
             },
             {
-                "cmd" : "rm -rf {key_file}",
-                "format" : {
-                    "key_file" : key_file,
-                },
+                "cmd": f"rm -rf {key_file}",
             },
         ]
 
         try:
             for op in commands:
-                result = ctx.run(op["cmd"].format(**op["format"]),
-                                 echo=False, out_stream=tout(), err_stream=terr())
+                result = ctx.run(op["cmd"], echo=False, out_stream=tout(), err_stream=terr())
             print("SUCCESS!")
         except (Failure, UnexpectedExit,):
             print("FAILED! [Operation Failed]")
@@ -339,20 +270,18 @@ class BaseServiceAccount():
         try:
             project_dict = settings_dict[project]
         except KeyError:
-            raise ServiceAccountCreateError(
-                "Config '{project}' not found.".format(project=project))
+            raise ServiceAccountCreateError(f"Config '{project}' not found.")
 
-        serviceAccounts = project_dict['serviceAccount']
+        service_accounts = project_dict['serviceAccount']
         objs = list()
-        for i in range (len(serviceAccounts)):
+        for i in range(len(service_accounts)):
             try:
                 objs.append(BaseServiceAccount(
-                    name=serviceAccounts[i]['name'],
-                    description=serviceAccounts[i]['description'],
-                    role=serviceAccounts[i]['role'],
-                    display_name=serviceAccounts[i]['displayName']))
+                    name=service_accounts[i]['name'],
+                    description=service_accounts[i]['description'],
+                    role=service_accounts[i]['role'],
+                    display_name=service_accounts[i]['displayName']))
 
             except KeyError:
-                raise ServiceAccountCreateError(
-                    "Config '{project}' has invalid keys.".format(project=project))
+                raise ServiceAccountCreateError(f"Config '{project}' has invalid keys.")
         return objs

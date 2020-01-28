@@ -37,15 +37,14 @@ RUN set -ex \
 ENV HOME /rehive/
 ENV PATH $PATH:/opt/google-cloud-sdk/bin
 
-COPY ./var/.config/gcloud /rehive/.config
-
 RUN set -ex \
     && addgroup -S rehive \
     && adduser -S -G rehive -h /rehive rehive \
     && mkdir -p /rehive/.kube /rehive/tesserarius/var/tesserarius \
-    && chown -R rehive:rehive /rehive/.config \
     && chown -R rehive:rehive /rehive/.kube \
     && chown -R rehive:rehive /rehive/tesserarius
+
+COPY --chown=rehive:rehive ./var/.config/gcloud /rehive/.config
 
 USER rehive
 
