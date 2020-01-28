@@ -40,13 +40,13 @@ class BaseRole():
 
 
     def __str__(self):
-        return f"name: {self.name}, "
-            f"title: {self.title}, "
-            f"stage: {self.stage}, "
-            f"project_id: {self.project_id}, "
-            f"permissions: {self.permissions!s}, "
-            f"remove_permissions: {self.remove_permissions!s}, "
-            f"add_permissions: {self.add_permissions!s}, "
+        return f"name: {self.name}, " \
+            f"title: {self.title}, " \
+            f"stage: {self.stage}, " \
+            f"project_id: {self.project_id}, " \
+            f"permissions: {self.permissions!s}, " \
+            f"remove_permissions: {self.remove_permissions!s}, " \
+            f"add_permissions: {self.add_permissions!s}, " \
             f"description: {self.description}"
 
 
@@ -57,12 +57,12 @@ class BaseRole():
         print(f"\nCreating role '{self.name}' ... ",
               end="")
         permissions_str = ",".join(self.permissions)
-        command = f"gcloud iam roles create {self.name}"
-                    f" --title \"{self.title}\""
-                    f" --permissions \"{permissions_str}\""
-                    f" --stage \"{self.stage}\""
-                    f" --description \"{self.description}\""
-                    f" --verbosity debug "
+        command = f"gcloud iam roles create {self.name}" \
+                    f" --title \"{self.title}\"" \
+                    f" --permissions \"{permissions_str}\"" \
+                    f" --stage \"{self.stage}\"" \
+                    f" --description \"{self.description}\"" \
+                    f" --verbosity debug " \
                     f" --project {self.project_id}"
 
         if not self.created:
@@ -87,14 +87,14 @@ class BaseRole():
         permissions_str = ",".join(self.permissions)
         add_permissions_str = ",".join(self.add_permissions)
         remove_permissions_str = ",".join(self.remove_permissions)
-        command = f"gcloud iam roles update {self.name}"
-                    f" --title \"{self.title}\""
-                    f" --permissions \"{permissions_str}\""
-                    f" --add-permissions \"{add_permissions_str}\""
-                    f" --remove-permissions \"{remove_permissions_str}\""
-                    f" --stage \"{self.stage}\""
-                    f" --description \"{self.description}\""
-                    f" --verbosity debug "
+        command = f"gcloud iam roles update {self.name}" \
+                    f" --title \"{self.title}\"" \
+                    f" --permissions \"{permissions_str}\"" \
+                    f" --add-permissions \"{add_permissions_str}\"" \
+                    f" --remove-permissions \"{remove_permissions_str}\"" \
+                    f" --stage \"{self.stage}\"" \
+                    f" --description \"{self.description}\"" \
+                    f" --verbosity debug " \
                     f" --project {self.project_id}"
 
         try:

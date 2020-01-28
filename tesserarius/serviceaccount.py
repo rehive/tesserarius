@@ -6,7 +6,7 @@ from invoke.exceptions import Failure, UnexpectedExit, ParseError
 from tesserarius.utils import get_error_stream as terr, \
     get_out_stream as tout, confirm
 
-BASE_NAME_PATTERN = r'((-staging)?)|(-[a-z]{3,10}(-staging)?)'
+BASE_NAME_PATTERN = r'([a-z]{3,10}(-staging)?)'
 
 
 class ServiceAccountValidationError(Exception):
@@ -25,6 +25,8 @@ class BaseServiceAccount:
     description = ""
     name_pattern = None
     role = None
+    environment = None
+    environment_settings = None
 
     created = False
 
@@ -33,12 +35,16 @@ class BaseServiceAccount:
                  display_name=None,
                  role=None,
                  description=None,
-                 name_pattern=None):
+                 name_pattern=None,
+                 environment=None,
+                 environment_settings=None):
         self.name_pattern = name_pattern
         self.name = name
         self.display_name = display_name
         self.description = description
         self.role = role
+        self.environment = environment
+        self.environment_settings = environment_settings
 
         if name_pattern is None:
             self.name_pattern = BASE_NAME_PATTERN
@@ -168,7 +174,6 @@ class BaseServiceAccount:
         except ParseError:
             print("FAILED! [Operation cancelled by user]")
 
-
     def chown(self, ctx, bucket):
         """
         Upload key file to Kubernetes Cluster as a secrets
@@ -181,18 +186,18 @@ class BaseServiceAccount:
 
         commands = [
             {
-                "cmd" : f"gcloud iam service-accounts describe {self.emailaddress} " \
-                        f" --project {project_id}",
+                "cmd": f"gcloud iam service-accounts describe {self.emailaddress} "
+                       f" --project {self.project_id}",
             },
             {
-                "cmd" : f"gsutil ls gs://{bucket}",
+                "cmd": f"gsutil ls gs://{bucket}",
             },
             {
-                "cmd" : f"gsutil defacl set private gs://{bucket}",
+                "cmd": f"gsutil defacl set private gs://{bucket}",
             },
             {
-                "cmd" : f"gsutil defacl ch -u {self.emailaddress}:owner "
-                        f" gs://{bucket}",
+                "cmd": f"gsutil defacl ch -u {self.emailaddress}:owner "
+                       f" gs://{bucket}",
             },
         ]
         try:
@@ -205,16 +210,15 @@ class BaseServiceAccount:
         except ParseError:
             print("FAILED! [Operation cancelled by user]")
 
-
-    def upload(self, ctx, environment, secret):
+    def upload(self, ctx, secret):
         """
         Upload key file to Kubernetes Cluster as a secrets
         """
-        settings_dict = get_settings()
         print(f"\nUploading private key for '{self.name}' ... ", end="")
         self.get_emailaddress()
         key_file = "var/tesserarius/" + self.name + ".json"
         key_file = abspath(key_file)
+        namespace = self.environment_settings["kubernetes"]["namespace"]
 
         commands = [
             {
@@ -247,19 +251,19 @@ class BaseServiceAccount:
 
         try:
             for op in commands:
-                result = ctx.run(op["cmd"], echo=False, out_stream=tout(), err_stream=terr())
+                ctx.run(op["cmd"], echo=False, out_stream=tout(), err_stream=terr())
             print("SUCCESS!")
         except (Failure, UnexpectedExit,):
             print("FAILED! [Operation Failed]")
         except ParseError:
             print("FAILED! [Operation cancelled by user]")
 
-
     @staticmethod
     def create_objs(project):
         settings_dict = get_settings()
         try:
             project_dict = settings_dict[project]
+            environment_settings = settings_dict["environment"][project]
         except KeyError:
             raise ServiceAccountCreateError(f"Config '{project}' not found.")
 
@@ -267,12 +271,14 @@ class BaseServiceAccount:
         objs = list()
         for i in range(len(service_accounts)):
             try:
-                objs.append(BaseServiceAccount(
+                obj = BaseServiceAccount(
                     name=service_accounts[i]['name'],
                     description=service_accounts[i]['description'],
                     role=service_accounts[i]['role'],
-                    display_name=service_accounts[i]['displayName']))
-
+                    display_name=service_accounts[i]['displayName'],
+                    environment=service_accounts[i]['environment'])
+                obj.environment_settings = environment_settings[obj.environment]
+                objs.append(obj)
             except KeyError:
                 raise ServiceAccountCreateError(f"Config '{project}' has invalid keys.")
         return objs

@@ -8,7 +8,6 @@ from tesserarius.utils import get_gcloud_wide_flags, \
 class PlatformServiceAccount(BaseServiceAccount):
     project_id = "rehive-core"
 
-
     def __init__(self,
                  name=None,
                  display_name=None,
@@ -99,18 +98,18 @@ def bind(ctx, name=None):
     "namespace" : "The kubernetes namespace to upload the private key",
     "secret": "The kubernetes secret name to upload the private key",
 })
-def upload(ctx, name, namespace, secret):
+def upload(ctx, name=None, secret="gcloud-wale"):
     '''
     Uploads a Google Cloud IAM Service Account private key to
     k8s namespace as a generic secret on rehive-core
     '''
     task_template(PlatformServiceAccount, "upload",
-                  [ctx, namespace, secret,], name=name)
+                  [ctx, secret,], name=name)
 
 
 @task(help={
-    "name" : "The name of the service account to handle",
-    "bucket" : "The GCS bucket the service account should own",
+    "name": "The name of the service account to handle",
+    "bucket": "The GCS bucket the service account should own",
 })
 def chown(ctx, name, bucket):
     '''
