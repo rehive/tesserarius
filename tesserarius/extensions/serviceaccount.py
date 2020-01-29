@@ -90,7 +90,7 @@ def update(ctx, name=None):
     "name": "The name of the service account to upload",
     "secret": "The kubernetes secret name to upload the private key",
 })
-def upload(ctx, name=None, secret="gcloud-wale"):
+def upload(ctx, name=None, secret="google-credentials"):
     '''
     Uploads a Google Cloud IAM Service Account private key to
     k8s namespace as a generic secret on rehive-services
@@ -118,6 +118,7 @@ def chown(ctx, name, bucket):
     Changes ownership of a GCS bucket to an IAM service account on rehive-services
     '''
     task_template(ExtensionsServiceAccount, "chown", [ctx, bucket,], name=name)
+
 
 collection = Collection("serviceaccount")
 collection.add_task(bind, "bind")

@@ -1,7 +1,7 @@
 from os.path import abspath
 from re import match
 
-from tesserarius.utils import get_gcloud_wide_flags, get_settings
+from tesserarius.utils import get_settings
 from invoke.exceptions import Failure, UnexpectedExit, ParseError
 from tesserarius.utils import get_error_stream as terr, \
     get_out_stream as tout, confirm
@@ -115,7 +115,7 @@ class BaseServiceAccount:
             f" --project {self.project_id}"
 
         try:
-            result = ctx.run(command, echo=False,out_stream=tout(), err_stream=terr())
+            ctx.run(command, echo=False,out_stream=tout(), err_stream=terr())
             self.get_emailaddress()
             print("SUCCESS!")
         except (Failure, UnexpectedExit,):
@@ -134,7 +134,7 @@ class BaseServiceAccount:
 
         try:
             confirm(f"\nAre you sure you want to delete SA '{self.emailaddress}'? (y/n) ")
-            result = ctx.run(command, echo=False,out_stream=tout(), err_stream=terr())
+            ctx.run(command, echo=False,out_stream=tout(), err_stream=terr())
             print("SUCCESS!")
         except (Failure, UnexpectedExit,):
             self.emailaddress = None
@@ -181,8 +181,6 @@ class BaseServiceAccount:
         print(f"\nChanging ownership of '{bucket}' to '{self.name}' ... ",
               end="")
         self.get_emailaddress()
-        key_file = "var/tesserarius/" + self.name + ".json"
-        key_file = abspath(key_file)
 
         commands = [
             {
@@ -202,8 +200,8 @@ class BaseServiceAccount:
         ]
         try:
             for op in commands:
-                result = ctx.run(op["cmd"], echo=False,
-                                 out_stream=tout(), err_stream=terr())
+                ctx.run(op["cmd"], echo=False,
+                        out_stream=tout(), err_stream=terr())
             print("SUCCESS!")
         except (Failure, UnexpectedExit,):
             print("FAILED! [Operation Failed]")
@@ -219,30 +217,49 @@ class BaseServiceAccount:
         key_file = "var/tesserarius/" + self.name + ".json"
         key_file = abspath(key_file)
         namespace = self.environment_settings["kubernetes"]["namespace"]
+        cluster = self.environment_settings["kubernetes"]["cluster"]
+        project = self.environment_settings["gcloud"]["project"]
+        zone = self.environment_settings["gcloud"].get("zone")
+        region = self.environment_settings["gcloud"].get("region")
+
+        assert(region or zone)
+
+        region_zone = f"--region {region}" if region else f"--zone {zone}"
 
         commands = [
             {
+                "cmd": f"gcloud config set project {project}"
+            },
+            {
+                "cmd": f"gcloud container clusters get-credentials {cluster} "
+                f" --project {project} {region_zone}"
+            },
+            {
+                "cmd": f"kubectl config set-context $(kubectl config current-context)"
+                f" --namespace {namespace}"
+            },
+            {
                 "cmd": f"gcloud iam service-accounts describe "
-                    f"{self.emailaddress} "
-                    f"--project {self.project_id}",
+                f"{self.emailaddress} "
+                f"--project {self.project_id}",
             },
             {
                 "cmd": f"kubectl get namespace {namespace} -o name",
             },
             {
                 "cmd": f"gcloud iam service-accounts keys create {key_file} "
-                    f" --iam-account={self.emailaddress}"
-                    f" --key-file-type=\"json\""
-                    f" --project {self.project_id}",
+                f" --iam-account={self.emailaddress}"
+                f" --key-file-type=\"json\""
+                f" --project {self.project_id}",
             },
             {
                 "cmd": f"kubectl delete secret {secret} "
-                    f" --namespace {namespace} || touch {key_file}",
+                f" --namespace {namespace} || touch {key_file}",
             },
             {
                 "cmd": f"kubectl create secret generic {secret} "
-                    f" --from-file={secret}.json={key_file}"
-                    f" --namespace {namespace}",
+                f" --from-file={secret}.json={key_file}"
+                f" --namespace {namespace}",
             },
             {
                 "cmd": f"rm -rf {key_file}",
