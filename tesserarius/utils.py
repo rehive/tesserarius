@@ -40,12 +40,20 @@ def format_yaml(template, config):
 
 
 def get_error_stream():
-    path = 'var/tesserarius/error.log'
+    path = 'var/tesserarius/'
+    path = os.path.abspath(path)
+    if not os.path.isdir(path):
+        os.mkdir(path)
+    path = os.path.join(path, 'error.log')
     return open(path, 'a+')
 
 
 def get_out_stream():
-    path = 'var/tesserarius/out.log'
+    path = 'var/tesserarius/'
+    path = os.path.abspath(path)
+    if not os.path.isdir(path):
+        os.mkdir(path)
+    path = os.path.join(path, 'out.log')
     return open(path, 'a+')
 
 
@@ -84,7 +92,6 @@ def confirm(prompt='Continue?\n', failure_prompt='User cancelled task'):
     Raise ParseError on negative response
     """
     response = input(prompt)
-    response_bool = False
 
     try:
         response_bool = strtobool(response)

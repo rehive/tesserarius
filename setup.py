@@ -108,7 +108,7 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires= parse_requirements("requirements.txt"),
+    install_requires=parse_requirements("requirements.txt"),
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
     # for example:
@@ -120,7 +120,10 @@ setup(
             'python-dotenv>=0.5.1',
             'semver',
         ],
-        'test': ['coverage'],
+        'test': [
+            'coverage',
+            'kubernetes==10.0.1',
+        ],
     },
 
     # test_suite='nose.collector',

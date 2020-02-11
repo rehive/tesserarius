@@ -51,9 +51,11 @@ release:
 build:
 	python setup.py build
 
-upload: release build dist
-	python3 -m pip install --upgrade setuptools wheel twine
+upload:
+	python3 -m pip install --upgrade pip setuptools wheel twine
 	python3 -m twine upload dist/* && echo 'success' > upload
+
+all: release build dist upload
 
 clean:
 	rm -rf build dist upload
