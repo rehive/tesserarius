@@ -65,10 +65,10 @@ class BaseServiceAccount:
         short name for the service account describing its purpose.
         Example: staging, media-staging, pgbackup, pgbackup-staging
         """
-        if not match(rf"^{self.name_pattern}$", self.name):
-            raise ServiceAccountValidationError(
-                f"Invalid account name. {self.name} "
-                f"doesn't fit standard '{self.name_pattern}'")
+        # if not match(rf"^{self.name_pattern}$", self.name):
+        #     raise ServiceAccountValidationError(
+        #         f"Invalid account name. {self.name} "
+        #         f"doesn't fit standard '{self.name_pattern}'")
         if len(self.name) >= 30:
             raise ServiceAccountValidationError(
                 f"Account name '{self.name}' is too long (max length: 30).")
