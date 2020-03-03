@@ -1,32 +1,35 @@
 version: 1
-staging:
-  gcloud:
-    project: project-id
-    zone: europe-west1-c
-  kubernetes:
-    cluster: staging
-    namespace: tesserarius
+environment:
+  extensions:
+    staging:
+      gcloud:
+        project: rehive-services
+        zone: europe-west1-c
+      kubernetes:
+        cluster: staging
+        namespace: service-test-staging
+    production:
+      gcloud:
+        project: rehive-services
+        zone: europe-west1-c
+      kubernetes:
+        cluster: production
+        namespace: service-test
+  platform: {}
 extensions:
   serviceAccount:
-  - name: service-test-media
-    displayName: "Test Service Media Writer"
-    description: "Service account for the Test Service to write to the Media Bucket"
+  - name: test-postgres
+    displayName: "test Service Backup Writer"
+    description: "Service Account for the test Service on production to write to pgdata the bucket"
     role: extensions.bucket.writer
-  - name: service-test-media-staging
-    displayName: "Product Service Media Writer"
-    description: "Service Account for the Product Service on staging to write to the Media Bucket"
+    environment: production
+  - name: test-staging-postgres
+    displayName: "test Service Backup Writer"
+    description: "Service Account for the test Service on staging to write to pgdata the bucket"
     role: extensions.bucket.writer
-  bindings:
-  - members:
-    - user:test@rehive.com
-    role: projects/project-id/roles/extensions.team.developer
-platform:
-  serviceAccount:
-  - name: platform-pgbackup
-    displayName: "Platform Developer"
-    description: "Service Account for the Platform Developer"
-    role: platform.bucket.writer
-  bindings:
-  - members:
-    - user: test@rehive.com
-    role: projects/rehive-core/roles/platform.team.developer
+    environment: staging
+  bindings: []
+  # - members:
+  #   - user:test@rehive.com
+  #   role: projects/project-id/roles/extensions.team.developer
+platform: {}
