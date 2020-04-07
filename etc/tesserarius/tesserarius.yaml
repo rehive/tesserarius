@@ -2,6 +2,18 @@ version: 1
 environment:
   extensions:
     staging:
+      azure:
+        subscription_id: 57800aa9-e115-4ede-9b70-0e1ce97294f6
+        resource_group: rehive-services-staging
+        region: westeurope
+      gcloud:
+        project: rehive-services
+        zone: europe-west1-c
+      kubernetes:
+        cloud_provider: azure
+        cluster: rehive-services-staging
+        namespace: service-test-staging
+    staging-gke:
       gcloud:
         project: rehive-services
         zone: europe-west1-c

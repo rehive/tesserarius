@@ -218,22 +218,47 @@ class BaseServiceAccount:
         key_file = abspath(key_file)
         namespace = self.environment_settings["kubernetes"]["namespace"]
         cluster = self.environment_settings["kubernetes"]["cluster"]
-        project = self.environment_settings["gcloud"]["project"]
-        zone = self.environment_settings["gcloud"].get("zone")
-        region = self.environment_settings["gcloud"].get("region")
+        cloud_provider = self.environment_settings["kubernetes"].get("cloud_provider", 'gcloud')
 
-        assert(region or zone)
+        # TODO: better handling of the fact that cluster can be in azure and service accounts in GCP
+        # For now it is assumed service accounts are in GCP while cluster provider can be specified
+        gcloud_settings = self.environment_settings["gcloud"]
+        azure_settings = self.environment_settings.get("azure")
 
-        region_zone = f"--region {region}" if region else f"--zone {zone}"
-
+        project = gcloud_settings["project"]
         commands = [
             {
                 "cmd": f"gcloud config set project {project}"
             },
-            {
-                "cmd": f"gcloud container clusters get-credentials {cluster} "
-                f" --project {project} {region_zone}"
-            },
+        ]
+
+        if cloud_provider == 'azure':
+            assert(azure_settings)
+            subscription_id = azure_settings["subscription_id"]
+            group = azure_settings["resource_group"]
+            region = azure_settings["region"]
+            commands.extend([
+                {
+                    "cmd": f"az account set --subscription {subscription_id}"
+                },
+                {
+                    "cmd": f"az aks get-credentials -g {group} -n {cluster} --context aks-{region}-{cluster} --overwrite-existing"
+                },
+            ])
+
+        elif cloud_provider == 'gcloud':
+            zone = gcloud_settings.get("zone")
+            region = gcloud_settings.get("region")
+            assert(region or zone)
+            region_zone = f"--region {region}" if region else f"--zone {zone}"
+            commands.extend([
+                {
+                    "cmd": f"gcloud container clusters get-credentials {cluster} "
+                    f" --project {project} {region_zone}"
+                },
+            ])
+
+        commands.extend([
             {
                 "cmd": f"kubectl config set-context $(kubectl config current-context)"
                 f" --namespace {namespace}"
@@ -264,7 +289,7 @@ class BaseServiceAccount:
             {
                 "cmd": f"rm -rf {key_file}",
             },
-        ]
+        ])
 
         try:
             for op in commands:
